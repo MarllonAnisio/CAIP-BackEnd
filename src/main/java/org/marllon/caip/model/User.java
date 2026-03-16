@@ -6,7 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,20 +27,20 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull
+    @NotBlank(message = "The registration cannot be empty.")
     @Column(unique = true, nullable = false, length = 12, name = "registration")
     private String registration;
 
-    @NotNull
+    @NotBlank(message = "The name cannot be empty.")
     @Column(nullable = false, length = 50, name = "name")
     private String name;
 
 
-    @NotNull
+    @NotBlank(message = "The password cannot be empty.")
     @Column(nullable = false, name = "password")
     private String password;
 
-    @NotNull
+
     @Column(nullable = false, name = "is_active")
     private boolean isActive = true;
 
