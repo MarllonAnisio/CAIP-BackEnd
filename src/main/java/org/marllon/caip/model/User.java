@@ -1,6 +1,7 @@
 package org.marllon.caip.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -68,6 +70,14 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "fk_role_id")
     )
     private List<Role> roles;
+
+    @OneToMany(mappedBy = "foundBy")
+    @JsonManagedReference("report-foundBy")
+    private List<Report> reportsFound;
+
+    @OneToMany(mappedBy = "collectedBy")
+    @JsonManagedReference("report-collectedBy")
+    private List<Report> reportsCollected;
 
     @Override
     public String toString() {
