@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.marllon.caip.model.constants.TypeReport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -93,7 +94,7 @@ public class Report {
             joinColumns =  @JoinColumn(name = "fk_report_id"),
             inverseJoinColumns = @JoinColumn(name = "fk_status_step_id")
     )
-    private List<StatusStep> statusSteps;
+    private List<StatusStep> statusSteps = new ArrayList<>();;
 
 
     /**

@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -40,6 +41,6 @@ public class Location {
     @OneToMany(mappedBy = "location", fetch = FetchType.LAZY)
     @JsonManagedReference("report-location")
     @JsonIgnore
-    private List<Report> reports;
+    private List<Report> reports = new ArrayList<>();;
 
 }
