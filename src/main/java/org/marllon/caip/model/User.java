@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,6 +52,32 @@ public class User {
     @Column(nullable = false, name = "is_active")
     private boolean isActive = true;
 
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "tb_user_role",
+            joinColumns = @JoinColumn(name = "fk_user_id"),
+            inverseJoinColumns = @JoinColumn(name = "fk_role_id")
+    )
+    private List<Role> roles = new ArrayList<>();;
+
+    @OneToMany(mappedBy = "foundBy")
+    @JsonManagedReference("report-foundBy")
+    private List<Report> reportsFound = new ArrayList<>();;
+
+    @OneToMany(mappedBy = "collectedBy")
+    @JsonManagedReference("report-collectedBy")
+    private List<Report> reportsCollected = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", registration='" + registration + '\'' +
+                ", name='" + name + '\'' +
+                ", isActive=" + isActive +
+                '}';
+    }
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -61,31 +88,5 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hashCode(registration);
-    }
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "tb_user_role",
-            joinColumns = @JoinColumn(name = "fk_user_id"),
-            inverseJoinColumns = @JoinColumn(name = "fk_role_id")
-    )
-    private List<Role> roles;
-
-    @OneToMany(mappedBy = "foundBy")
-    @JsonManagedReference("report-foundBy")
-    private List<Report> reportsFound;
-
-    @OneToMany(mappedBy = "collectedBy")
-    @JsonManagedReference("report-collectedBy")
-    private List<Report> reportsCollected;
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", registration='" + registration + '\'' +
-                ", name='" + name + '\'' +
-                ", isActive=" + isActive +
-                '}';
     }
 }
