@@ -8,6 +8,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,6 +19,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.marllon.caip.model.constants.TypeReport;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -53,4 +59,12 @@ public class Report {
 
     @Column(nullable = false, name = "image_url")
     private String imageUrl;
+
+    @ManyToMany
+    @JoinTable(
+            name = "report_status_step",
+            joinColumns =  @JoinColumn(name = "fk_report_id"),
+            inverseJoinColumns = @JoinColumn(name = "fk_status_step_id")
+    )
+    private List<StatusStep> statusSteps;
 }
