@@ -14,6 +14,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -21,6 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.marllon.caip.model.constants.TypeReport;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +49,19 @@ public class Report {
     @Column(nullable = false, length = 130)
     private String title;
 
+    /**
+     * data em que o report foi feito.
+     * */
+    @NotNull(message = "The date cannot be null.")
+    @PastOrPresent(message = "The report date cannot be in the future.")
+    @Column(nullable = false, name = "date_report")
+    private LocalDateTime date;
+
+    /**
+     * data em que o item foi reclamado.
+     * */
+    @Column(name = "date_reclamed")
+    private LocalDateTime dateReclamed;
     /**
      * tipo do report, de qual natureza foi feito, se perdido ou achado
      * */
@@ -94,7 +110,7 @@ public class Report {
             joinColumns =  @JoinColumn(name = "fk_report_id"),
             inverseJoinColumns = @JoinColumn(name = "fk_status_step_id")
     )
-    private List<StatusStep> statusSteps = new ArrayList<>();;
+    private List<StatusStep> statusSteps = new ArrayList<>();
 
 
     /**
