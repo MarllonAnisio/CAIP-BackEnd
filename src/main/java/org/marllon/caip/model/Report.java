@@ -1,6 +1,7 @@
 package org.marllon.caip.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -37,29 +38,55 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    /**
+     * titulo do report, nome do item perdido.
+     * */
     @NotBlank(message = "The title cannot be empty.")
     @Column(nullable = false, length = 130)
     private String title;
 
+    /**
+     * tipo do report, de qual natureza foi feito, se perdido ou achado
+     * */
     @NotBlank(message = "The typeReport cannot be empty.")
     @Enumerated
     @Column(nullable = false, name = "type_report")
     private TypeReport typeReport;
 
+    /**
+     * status do report, se ele foi fechado.
+     * */
     @Column(nullable = false, name = "is_closed")
     private boolean isClosed = false;
 
+    /**
+     * descrição do item perdido.
+     * */
     @NotBlank(message = "The description cannot be empty.")
     @Column(nullable = false, name = "description")
     private String description;
 
+    /**
+     * posição do item perdido, localidade onde foi encontrado. (não obrigatorio)
+     * */
     @Embedded
     @Column(name = "position")
     private Position position;
 
+    @ManyToOne
+    @JoinColumn(name = "fk_location_id", nullable = false)
+    private Location location;
+
+    /**
+     * Imagem do item perdido.
+     * */
     @Column(nullable = false, name = "image_url")
     private String imageUrl;
 
+
+    /**
+     * Status do report.
+     * */
     @ManyToMany
     @JoinTable(
             name = "report_status_step",
@@ -67,4 +94,21 @@ public class Report {
             inverseJoinColumns = @JoinColumn(name = "fk_status_step_id")
     )
     private List<StatusStep> statusSteps;
+
+
+    /**
+     * id do usuario que encontrou o item perdido.
+     * */
+    @ManyToOne
+    @JoinColumn(name = "fk_found_by")
+    @JsonBackReference("report-foundBy")
+    private User foundBy;
+
+    /**
+     * id do usuario que reclamou o item perdido ou que recuperou o item perdido.
+     * */
+    @ManyToOne
+    @JoinColumn(name = "fk_collected_by")
+    @JsonBackReference("report-collectedBy")
+    private User collectedBy;
 }
