@@ -32,7 +32,7 @@ public class Location {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     @NotBlank(message = "The name cannot be empty.")
     @Column(nullable = false, length = 50)

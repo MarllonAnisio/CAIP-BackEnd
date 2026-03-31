@@ -25,7 +25,7 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @NotBlank(message = "The name cannot be empty.")
     @Column(nullable = false, length = 50, name = "name")

@@ -33,7 +33,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @NotBlank(message = "The registration cannot be empty.")
     @Column(unique = true, nullable = false, length = 12, name = "registration")
