@@ -59,7 +59,7 @@ public class User {
             joinColumns = @JoinColumn(name = "fk_user_id"),
             inverseJoinColumns = @JoinColumn(name = "fk_role_id")
     )
-    private List<Role> roles = new ArrayList<>();;
+    private List<Role> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "foundBy")
     @JsonManagedReference("report-foundBy")
