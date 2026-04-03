@@ -2,6 +2,12 @@ package org.marllon.caip.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.marllon.caip.dto.request.AuthUserRequest;
+import org.marllon.caip.dto.request.RefreshTokenRequest;
+import org.marllon.caip.dto.request.UserRequest;
+import org.marllon.caip.dto.response.AuthUserResponse;
+import org.marllon.caip.dto.response.RefreshTokenResponse;
+import org.marllon.caip.dto.response.UserResponse;
 import org.marllon.caip.service.AuthService;
 import org.marllon.caip.service.TokenBlacklistService;
 import org.marllon.caip.service.security.JwtTokenService;
@@ -28,17 +34,17 @@ public class AuthController {
     private final TokenBlacklistService tokenBlacklistService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthUserRequestDto user) throws Exception {
+    public ResponseEntity<AuthUserResponse> login(@RequestBody AuthUserRequest user) throws Exception {
         try {
             Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getRegistration(), user.getPassword())
+                    new UsernamePasswordAuthenticationToken(user.registration(), user.password())
             );
             String username = auth.getName();
             String accessToken = jwtTokenService.generateAccessToken(username);
             String refreshToken = jwtTokenService.generateRefreshToken(username);
 
             return ResponseEntity.ok(
-                    new AuthResponseDto(
+                    new AuthUserResponse(
                             accessToken,
                             jwtTokenService.getAccessExpirationSeconds(),
                             username,
@@ -52,15 +58,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDto> Register(@RequestBody UserRequestDto user) throws Exception {
+    public ResponseEntity<UserResponse> Register(@RequestBody UserRequest user) throws Exception {
         var userCreated = authService.register(user);
         return ResponseEntity.ok(userCreated);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request) {
-        // Em JWT stateless, o logout é feito no cliente (removendo o token)
-        // Opcional: implementar blacklist/refresh tokens
+
         final String authHeader = request.getHeader("Authorization");
         final String bearer = "Bearer ";
         if (authHeader != null && authHeader.startsWith(bearer)) {
@@ -74,8 +79,8 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<RefreshTokenResponseDto> refresh(@RequestBody RefreshTokenRequestDto requestDto) {
-        String refreshToken = requestDto.getRefreshToken();
+    public ResponseEntity<RefreshTokenResponse> refresh(@RequestBody RefreshTokenRequest requestDto) {
+        String refreshToken = requestDto.refreshToken();
         if (refreshToken == null || refreshToken.isBlank()) {
             return ResponseEntity.badRequest().build();
         }
@@ -89,14 +94,14 @@ public class AuthController {
                 return ResponseEntity.status(401).build();
             }
 
-            // Rotação do refresh: invalida o atual
+
             tokenBlacklistService.blacklist(refreshToken, jwtTokenService.extractExpiration(refreshToken).toInstant());
 
             String newAccess = jwtTokenService.generateAccessToken(username);
             String newRefresh = jwtTokenService.generateRefreshToken(username);
 
             return ResponseEntity.ok(
-                    new RefreshTokenResponseDto(
+                    new RefreshTokenResponse(
                             newAccess,
                             jwtTokenService.getAccessExpirationSeconds(),
                             newRefresh,
