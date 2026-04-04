@@ -15,6 +15,8 @@ public class AuthService {
     private final UserService userService;
 
 
+
+
     public void login(String registration, String password){
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(registration, password));
     }
