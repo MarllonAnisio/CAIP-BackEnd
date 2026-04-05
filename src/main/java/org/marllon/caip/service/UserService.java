@@ -62,7 +62,7 @@ public class UserService {
         /* Ignora qualquer role vinda do cliente no cadastro
          *  */
         user.setRoles(List.of(role));
-        user.setActive(true);
+        user.setIsActive(true);
 
         user = userRepository.save(user);
         return userMapper.toResponse(user);
