@@ -50,7 +50,7 @@ public class User {
 
 
     @Column(nullable = false, name = "is_active")
-    private boolean isActive = true;
+    private Boolean isActive = true;
 
 
     @ManyToMany(fetch = FetchType.LAZY)
