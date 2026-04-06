@@ -21,6 +21,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.marllon.caip.model.audit.BaseAuditableEntity;
 import org.marllon.caip.model.constants.TypeReport;
 
 import java.time.LocalDateTime;
@@ -36,7 +37,7 @@ import java.util.List;
 @Setter
 
 @Entity(name = "tb_report")
-public class Report {
+public class Report  extends BaseAuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
