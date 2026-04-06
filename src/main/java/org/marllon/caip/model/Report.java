@@ -62,6 +62,7 @@ public class Report {
      * */
     @Column(name = "date_reclamed")
     private LocalDateTime dateReclamed;
+
     /**
      * tipo do report, de qual natureza foi feito, se perdido ou achado
      * */
