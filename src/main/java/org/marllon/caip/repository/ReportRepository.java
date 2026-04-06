@@ -11,12 +11,12 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     List<Report> findAllByAudit_CreatedBy(User createdBy);
 
     // Apenas ativos do usuário
-    List<Report> findAllByAudit_CreatedByAndIsFinishFalse(User createdBy);
+    List<Report> findAllByAudit_CreatedByAndIsClosedFalse(User createdBy);
 
     // Ativos (globais)
-    List<Report> findAllByIsFinishIsFalse();
+    List<Report> findAllByIsClosedIsFalse();
 
     // Finalizados (globais)
-    List<Report> findAllByIsFinishIsTrue();
+    List<Report> findAllByIsClosedIsTrue();
 
 }
