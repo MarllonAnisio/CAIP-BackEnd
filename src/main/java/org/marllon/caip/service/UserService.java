@@ -43,13 +43,17 @@ public class UserService {
     @Transactional
     public UserResponse create(UserRequest dto) {
 
-        /*Sempre usar a role padrão "Estudante" no auto-registro*/
+        /**
+         * Sempre usar a role padrão "Estudante" no auto-registro
+         * */
         Role role = roleRepository.findByName("Estudante")
                 .orElseThrow(() -> new IllegalStateException("Role padrão 'Estudante' não encontrada"));
 
         User user = userMapper.toEntity(dto);
 
-        // Validação forte de senha: obrigatória, texto puro (não aceitar hash)
+        /**
+         * Validação forte de senha: obrigatória, texto puro (não aceitar hash)
+         * */
         String rawPassword = dto.password() == null ? "" : dto.password().trim();
         if (rawPassword.isBlank()) {
             throw new IllegalArgumentException("Senha é obrigatória");
@@ -59,8 +63,9 @@ public class UserService {
         }
         user.setPassword(passwordEncoder.encode(rawPassword));
 
-        /* Ignora qualquer role vinda do cliente no cadastro
-         *  */
+        /**
+         * Ignora qualquer role vinda do cliente no cadastro
+         * */
         user.setRoles(List.of(role));
         user.setIsActive(true);
 
@@ -76,8 +81,9 @@ public class UserService {
 
         userMapper.updateEntity(user, dto);
 
-        // Atualiza senha se informada: exige texto puro, não aceita hash pronto
-
+        /**
+         * Atualiza senha se informada: exige texto puro, não aceita hash pronto
+         * */
         if (dto.password() != null && !dto.password().isBlank()) {
             String candidate = dto.password().trim();
             if (isBcrypt(candidate)) {

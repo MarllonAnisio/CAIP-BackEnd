@@ -2,6 +2,7 @@ package org.marllon.caip.dto.response;
 
 import org.marllon.caip.dto.response.summarys.UserResponseSummary;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,7 +15,7 @@ public record ReportResponse(
          UserResponseSummary collectedBy,
          Boolean isFinish,
          UserResponseSummary createdBy,
-         LocalDateTime createdAt,
+         Instant createdAt,
          List<StatusStepDetailsResponse>statusSteps,
          String imageUrl
 ) {
