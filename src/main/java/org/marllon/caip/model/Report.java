@@ -24,14 +24,14 @@ import lombok.Setter;
 import org.marllon.caip.model.audit.BaseAuditableEntity;
 import org.marllon.caip.model.constants.TypeReport;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
-
-@Data
 
 @Getter
 @Setter
@@ -56,13 +56,13 @@ public class Report  extends BaseAuditableEntity {
     @NotNull(message = "The date cannot be null.")
     @PastOrPresent(message = "The report date cannot be in the future.")
     @Column(nullable = false, name = "date_report")
-    private LocalDateTime date;
+    private Instant date;
 
     /**
      * data em que o item foi reclamado.
      * */
     @Column(name = "date_reclamed")
-    private LocalDateTime dateReclamed;
+    private Instant dateReclamed;
 
     /**
      * tipo do report, de qual natureza foi feito, se perdido ou achado
@@ -130,4 +130,35 @@ public class Report  extends BaseAuditableEntity {
     @JoinColumn(name = "fk_collected_by")
     @JsonBackReference("report-collectedBy")
     private User collectedBy;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Report report = (Report) o;
+        return Objects.equals(id, report.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Report{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", date=" + date +
+                ", dateReclamed=" + dateReclamed +
+                ", typeReport=" + typeReport +
+                ", isClosed=" + isClosed +
+                ", description='" + description + '\'' +
+                ", position=" + position +
+                ", location=" + location +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", statusSteps=" + statusSteps +
+                ", foundBy=" + foundBy +
+                ", collectedBy=" + collectedBy +
+                '}';
+    }
 }

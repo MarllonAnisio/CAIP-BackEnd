@@ -14,14 +14,11 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
 
-
-
-
     public void login(String registration, String password){
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(registration, password));
     }
-
     public UserResponse register(UserRequest userRequest){
         return userService.create(userRequest);
     }
+
 }
