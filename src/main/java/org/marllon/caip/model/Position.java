@@ -21,4 +21,5 @@ public class Position {
     @Column(name = "position_y")
     private Integer y;
 
+
 }
