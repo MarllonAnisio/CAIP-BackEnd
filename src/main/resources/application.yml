@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: Caip-BackEnd
+
+  profiles:
+    active: ${PROFILE_ACTIVE:dev}
+  config:
+    import: optional:application_dev.yml,optional:application_common.yml

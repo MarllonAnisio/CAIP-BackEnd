@@ -1,0 +1,71 @@
+# Server
+server:
+  servlet:
+    session:
+      timeout: 10m
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+swagger-info:
+  server-url: http://localhost:${server.port}
+  ambient: "Local"
+
+springdoc:
+  show-actuator: true
+  swagger-ui:
+    path: /swagger-ui
+    enabled: true
+    operations-sorter: alpha
+    deep-linking: true
+  api-docs:
+    enabled: true
+    path: /api-docs
+
+logging:
+  pattern:
+    console: "%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n"
+
+  level:
+    br:
+      ifpb:
+        project:
+          reportservice: DEBUG
+    org:
+      springframework:
+        security: ERROR
+        data:
+          mongodb:
+            core:
+              MongoTemplate: DEBUG
+
+# actuator config
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  health:
+    readinessstate:
+      enabled: true
+    livenessstate:
+      enabled: true
+  endpoint:
+    shutdown:
+      access: unrestricted
+    health:
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+endpoints:
+  shutdown:
+    enabled: true
