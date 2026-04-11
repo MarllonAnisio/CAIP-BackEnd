@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,24 +18,19 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.marllon.caip.model.audit.BaseAuditableEntity;
 import org.marllon.caip.model.constants.TypeReport;
-
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-
-@Getter
-@Setter
+@Builder
 
 @Entity(name = "tb_report")
 public class Report  extends BaseAuditableEntity {
@@ -67,14 +63,15 @@ public class Report  extends BaseAuditableEntity {
     /**
      * tipo do report, de qual natureza foi feito, se perdido ou achado
      * */
-    @NotBlank(message = "The typeReport cannot be empty.")
-    @Enumerated
+    @NotNull(message = "The type report cannot be null.")
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "type_report")
     private TypeReport typeReport;
 
     /**
      * status do report, se ele foi fechado.
      * */
+    @Builder.Default
     @Column(nullable = false, name = "is_closed")
     private boolean isClosed = false;
 
@@ -89,7 +86,6 @@ public class Report  extends BaseAuditableEntity {
      * posição do item perdido, localidade onde foi encontrado. (não obrigatorio)
      * */
     @Embedded
-    @Column(name = "position")
     private Position position;
 
     @ManyToOne
@@ -106,6 +102,7 @@ public class Report  extends BaseAuditableEntity {
     /**
      * Status do report.
      * */
+    @Builder.Default
     @ManyToMany
     @JoinTable(
             name = "report_status_step",
