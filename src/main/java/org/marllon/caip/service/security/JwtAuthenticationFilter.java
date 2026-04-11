@@ -1,11 +1,10 @@
-package org.marllon.caip.config;
+package org.marllon.caip.service.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.marllon.caip.service.TokenBlacklistService;
-import org.marllon.caip.service.security.JwtTokenService;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -51,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             try {
-                // Bloqueia refresh tokens como credencial de acesso
+
                 if (!jwtTokenService.isAccessToken(token)) {
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
@@ -74,6 +73,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+
+        return path.startsWith("/swagger-ui") ||
+                path.startsWith("/v3/api-docs") ||
+                path.startsWith("/swagger-resources") ||
+                path.startsWith("/webjars") ||
+                path.startsWith("/auth/");
     }
 
 }
