@@ -15,11 +15,11 @@ import lombok.Setter;
 @Embeddable
 public class Position {
 
-    @Column(name = "position_x")
-    private Integer x;
+    @Column(name = "position_latitude")
+    private Double latidude;
 
-    @Column(name = "position_y")
-    private Integer y;
+    @Column(name = "position_longitude")
+    private Double longitude;
 
 
 }
