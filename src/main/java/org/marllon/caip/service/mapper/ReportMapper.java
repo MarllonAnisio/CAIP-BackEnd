@@ -1,5 +1,6 @@
 package org.marllon.caip.service.mapper;
 
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -44,14 +45,7 @@ public interface ReportMapper {
      *   Esses campos serão preenchidos pela lógica de negócio no Service (ou pelo JPA Auditing).
      * */
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "closed", ignore = true)
-    @Mapping(target = "audit", ignore = true)
-    @Mapping(target = "statusSteps", ignore = true)
-    @Mapping(target = "foundBy", ignore = true)
-    @Mapping(target = "collectedBy", ignore = true)
-    Report toEntity(ReportRequest request);
-
+    @BeanMapping(builder = @org.mapstruct.Builder(disableBuilder = true))
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "closed", ignore = true)
     @Mapping(target = "audit", ignore = true)
