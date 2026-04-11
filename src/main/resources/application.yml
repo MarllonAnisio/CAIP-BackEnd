@@ -1,8 +1,60 @@
 spring:
   application:
     name: Caip-BackEnd
-
   profiles:
     active: ${PROFILE_ACTIVE:dev}
-  config:
-    import: optional:application_dev.yml,optional:application_common.yml
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+server:
+  servlet:
+    session:
+      timeout: 10m
+
+# Configurações do Swagger
+swagger-info:
+  server-url: http://localhost:${server.port:8080}
+  ambient: "Local"
+
+springdoc:
+  show-actuator: true
+  swagger-ui:
+    path: /swagger-ui
+    enabled: true
+    operations-sorter: alpha
+    deep-linking: true
+  api-docs:
+    enabled: true
+
+
+# Logs
+logging:
+  pattern:
+    console: "%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n"
+  level:
+    br.ifpb.project.reportservice: DEBUG
+    org.springframework.security: ERROR
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics"
+  health:
+    readinessstate:
+      enabled: true
+    livenessstate:
+      enabled: true
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
