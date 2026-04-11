@@ -4,8 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record UserRequest(
-        @NotBlank(message = "The Username cannot be empty.")
-        String username,
+        @NotBlank(message = "The name cannot be empty.")
+        String name,
 
         @NotBlank(message = "The Registration cannot be empty.")
         String registration,
