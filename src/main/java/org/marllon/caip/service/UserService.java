@@ -46,10 +46,13 @@ public class UserService {
         /**
          * Sempre usar a role padrão "Estudante" no auto-registro
          * */
-        Role role = roleRepository.findByName("Estudante")
+        Role role = roleRepository.findByName("ROLE_STUDENT")
                 .orElseThrow(() -> new IllegalStateException("Role padrão 'Estudante' não encontrada"));
 
-        User user = userMapper.toEntity(dto);
+        User user = new User();
+        user.setRegistration(dto.registration());
+        user.setName(dto.name());
+
 
         /**
          * Validação forte de senha: obrigatória, texto puro (não aceitar hash)
