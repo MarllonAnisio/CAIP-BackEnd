@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @RequiredArgsConstructor
 @Service
 public class ReportService {
@@ -72,6 +73,14 @@ public class ReportService {
     @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN','ADMIN')")
     public List<ReportResponse> findAllActive() {
         return reportRepository.findAllByIsClosedIsFalse()
+                .stream()
+                .map(reportMapper::toResponse)
+                .toList();
+    }
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN','ADMIN')")
+    public List<ReportResponse> findByStatus() throws Exception {
+        return reportRepository.findAllByIsClosedIsTrue()
                 .stream()
                 .map(reportMapper::toResponse)
                 .toList();
