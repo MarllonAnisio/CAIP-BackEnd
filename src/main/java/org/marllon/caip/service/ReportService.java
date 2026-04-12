@@ -4,14 +4,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.marllon.caip.dto.response.ReportResponse;
 import org.marllon.caip.model.Report;
+import org.marllon.caip.model.User;
 import org.marllon.caip.repository.ReportRepository;
 import org.marllon.caip.repository.StatusStepRepository;
 import org.marllon.caip.repository.UserRepository;
 import org.marllon.caip.service.mapper.ReportMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -30,6 +37,17 @@ public class ReportService {
                 .orElseThrow(() -> new Exception("Report not found with id: " + id));
 
         return reportMapper.toResponse(report);
+    }
+
+
+    private User getAuthenticatedUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getName() == null) {
+            throw new IllegalStateException("Usuário não autenticado");
+        }
+        String registration = auth.getName();
+        return userRepository.findByRegistration(registration)
+                .orElseThrow(() -> new IllegalStateException("Usuário autenticado não encontrado"));
     }
 
 }
