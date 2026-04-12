@@ -59,6 +59,16 @@ public class ReportService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN','ADMIN')")
+    public List<ReportResponse> findAllForStaff() {
+        return reportRepository.findAll()
+                .stream()
+                .map(reportMapper::toResponse)
+                .toList();
+    }
+
+
     private User getAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || auth.getName() == null) {
