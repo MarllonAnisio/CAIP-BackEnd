@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -43,6 +44,16 @@ public class ReportService {
         User me = getAuthenticatedUser();
 
         return reportRepository.findAllByAudit_CreatedByAndIsClosedFalse(me)
+                .stream()
+                .map(reportMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ROLE_STUDANT') or hasRole('ROLE_LIBRARIAN') or hasRole('ADMIN')")
+    public List<ReportResponse> findMyActiveReports() {
+        User me = getAuthenticatedUser();
+        return reportRepository.findAllByAudit_CreatedBy(me)
                 .stream()
                 .map(reportMapper::toResponse)
                 .toList();
