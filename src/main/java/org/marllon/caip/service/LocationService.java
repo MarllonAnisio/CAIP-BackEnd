@@ -17,4 +17,10 @@ public class LocationService {
     public List<Location> findAll() {
         return locationRepository.findAll();
     }
+    @Transactional(readOnly = true)
+    public Location findById(Long id) {
+        return locationRepository.findById(id)
+                .orElseThrow();
+
+    }
 }
