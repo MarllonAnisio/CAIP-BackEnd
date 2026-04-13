@@ -1,8 +1,11 @@
 package org.marllon.caip.service;
 
 import lombok.RequiredArgsConstructor;
+import org.marllon.caip.dto.request.ReportRequest;
 import org.marllon.caip.dto.response.ReportResponse;
+import org.marllon.caip.model.Location;
 import org.marllon.caip.model.Report;
+import org.marllon.caip.model.StatusStep;
 import org.marllon.caip.model.User;
 import org.marllon.caip.repository.ReportRepository;
 import org.marllon.caip.repository.StatusStepRepository;
@@ -16,9 +19,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
 
 @RequiredArgsConstructor
 @Service
@@ -30,6 +32,9 @@ public class ReportService {
     private final UserMapper userMapper;
     private final StatusStepRepository statusStepRepository;
     private final UserRepository userRepository;
+    private final LocationService locationService;
+
+
 
 
     @Transactional(readOnly = true)
@@ -40,7 +45,7 @@ public class ReportService {
         return reportMapper.toResponse(report);
     }
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_STUDANT') or hasRole('ROLE_LIBRARIAN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_LIBRARIAN') or hasRole('ADMIN')")
     public List<ReportResponse> findMyReports() {
         User me = getAuthenticatedUser();
 
@@ -51,7 +56,7 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_STUDANT') or hasRole('ROLE_LIBRARIAN') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_LIBRARIAN') or hasRole('ADMIN')")
     public List<ReportResponse> findMyActiveReports() {
         User me = getAuthenticatedUser();
         return reportRepository.findAllByAudit_CreatedBy(me)
@@ -84,6 +89,26 @@ public class ReportService {
                 .stream()
                 .map(reportMapper::toResponse)
                 .toList();
+    }
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public ReportResponse save(ReportRequest report) {
+        User me = getAuthenticatedUser();
+        Location location = locationService.findById(report.locationId());
+
+        Report reportConverted = report.toEntity(me, location);
+
+
+        StatusStep status = statusStepRepository.findByName(reportConverted.getTypeReport().name())
+                .orElseThrow(() -> new IllegalArgumentException("Status inicial não encontrado para tipo: " + reportConverted.getTypeReport().name()));
+
+        reportConverted.setStatusSteps(new ArrayList<>(List.of(status)));
+
+        log.info("Saving report {}", reportConverted);
+
+        var savedReport = reportRepository.save(reportConverted);
+        return reportMapper.toResponse(savedReport);
+
     }
 
 

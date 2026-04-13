@@ -29,6 +29,9 @@ public record ReportRequest(
         Long locationId,
 
         PositionRequest position
+
+
+
 ){
     public Report toEntity(User author, Location location) {
 
