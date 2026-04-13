@@ -8,6 +8,7 @@ import org.marllon.caip.model.Location;
 import org.marllon.caip.model.Report;
 import org.marllon.caip.model.StatusStep;
 import org.marllon.caip.model.User;
+import org.marllon.caip.model.constants.TypeReport;
 import org.marllon.caip.repository.ReportRepository;
 import org.marllon.caip.repository.StatusStepRepository;
 import org.marllon.caip.repository.UserRepository;
@@ -159,6 +160,42 @@ public class ReportService {
 
         Report savedReport = reportRepository.save(existingReport);
         return reportMapper.toResponse(savedReport);
+    }
+
+    @Transactional
+    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    public ReportResponse linkReports(Long perdidoId, Long encontradoId) {
+
+        // 1. Buscas Seguras
+        Report perdido = reportRepository.findById(perdidoId)
+                .orElseThrow(() -> new EntityNotFoundException("Report LOST not found with id: " + perdidoId));
+
+        Report encontrado = reportRepository.findById(encontradoId)
+                .orElseThrow(() -> new EntityNotFoundException("Report FOUND not  found with id: " + encontradoId));
+
+        // 2. Validações de Regra de Negócio
+        if (perdido.getTypeReport() != TypeReport.LOST) {
+            throw new IllegalStateException("O primeiro report deve ser do tipo PERDIDO");
+        }
+        if (encontrado.getTypeReport() != TypeReport.FOUND) {
+            throw new IllegalStateException("O segundo report deve ser do tipo ENCONTRADO");
+        }
+
+        StatusStep concluido = statusStepRepository.findByName("COMPLETED")
+                .orElseThrow(() -> new IllegalStateException("Status CONCLUIDO não mapeado no banco"));
+
+        perdido.getStatusSteps().add(concluido);
+        perdido.setClosed(true);
+
+        encontrado.getStatusSteps().add(concluido);
+        encontrado.setClosed(true);
+
+        log.info("Match realizado! Report Perdido [{}] vinculado ao Encontrado [{}]", perdidoId, encontradoId);
+
+        reportRepository.save(perdido);
+        Report salvo = reportRepository.save(encontrado);
+
+        return reportMapper.toResponse(salvo);
     }
 
 
