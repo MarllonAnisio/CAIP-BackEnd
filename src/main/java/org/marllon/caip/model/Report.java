@@ -21,6 +21,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.marllon.caip.model.audit.BaseAuditableEntity;
 import org.marllon.caip.model.constants.TypeReport;
 import java.time.Instant;
@@ -33,6 +35,8 @@ import java.util.Objects;
 @Builder
 
 @Entity(name = "tb_report")
+@SQLDelete(sql = "UPDATE tb_report SET deleted = true WHERE id=?")
+@SQLRestriction("deleted = false")
 public class Report  extends BaseAuditableEntity {
 
     @Id
@@ -74,6 +78,9 @@ public class Report  extends BaseAuditableEntity {
     @Builder.Default
     @Column(nullable = false, name = "is_closed")
     private boolean isClosed = false;
+
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
 
     /**
      * descrição do item perdido.

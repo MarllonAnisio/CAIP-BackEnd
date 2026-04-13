@@ -1,5 +1,6 @@
 package org.marllon.caip.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.marllon.caip.dto.request.ReportRequest;
 import org.marllon.caip.dto.response.ReportResponse;
@@ -14,11 +15,15 @@ import org.marllon.caip.service.mapper.ReportMapper;
 import org.marllon.caip.service.mapper.UserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +38,6 @@ public class ReportService {
     private final StatusStepRepository statusStepRepository;
     private final UserRepository userRepository;
     private final LocationService locationService;
-
-
-
 
     @Transactional(readOnly = true)
     public ReportResponse findById(Long id) throws Exception {
@@ -98,7 +100,6 @@ public class ReportService {
 
         Report reportConverted = report.toEntity(me, location);
 
-
         StatusStep status = statusStepRepository.findByName(reportConverted.getTypeReport().name())
                 .orElseThrow(() -> new IllegalArgumentException("Status inicial não encontrado para tipo: " + reportConverted.getTypeReport().name()));
 
@@ -109,6 +110,55 @@ public class ReportService {
         var savedReport = reportRepository.save(reportConverted);
         return reportMapper.toResponse(savedReport);
 
+    }
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_LIBRARIAN') or hasRole('ADMIN')")
+    public void deleteReport(Long reportId) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new EntityNotFoundException("Relatório não encontrado"));
+
+        User me = getAuthenticatedUser();
+        boolean isOwner = report.getFoundBy()
+                .getId()
+                .equals(me.getId());
+
+        if (!isOwner) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            boolean isStaff = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_LIBRARIAN") || a.getAuthority().equals("ROLE_ADMIN"));
+
+            if (!isStaff) {
+                log.warn("Usuário {} tentou deletar o relatório {} sem permissão", me.getRegistration(), reportId);
+                throw new AccessDeniedException("Você só tem permissão para deletar os seus próprios relatórios.");
+            }
+        }
+
+        reportRepository.delete(report);
+        log.info("Relatório {} deletado (soft delete) pelo usuário {}", reportId, me.getRegistration());
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public void hardDeleteReport(Long reportId) {
+        reportRepository.hardDeleteById(reportId);
+    }
+
+    @Transactional
+    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    public ReportResponse update(Long id, ReportRequest request) {
+
+        Report existingReport = reportRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Relatório não encontrado com o ID: " + id));
+
+        Location location = locationService.findById(request.locationId());
+
+        reportMapper.updateEntity(existingReport, request);
+        existingReport.setLocation(location);
+
+        log.info("Relatório {} atualizado com sucesso pela Staff", existingReport.getId());
+
+        Report savedReport = reportRepository.save(existingReport);
+        return reportMapper.toResponse(savedReport);
     }
 
 
