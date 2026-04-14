@@ -132,7 +132,7 @@ public class JwtTokenService {
         String tokenIssuer = extractClaim(token, Claims::getIssuer);
         java.util.Set<String> tokenAudience = extractClaim(token, Claims::getAudience);
 
-        return issuer.equals(tokenIssuer) && audience.equals(tokenAudience);
+        return issuer.equals(tokenIssuer) && tokenAudience != null && tokenAudience.contains(audience);
     }
 
     public String extractUsername(String token) {
