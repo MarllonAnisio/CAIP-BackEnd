@@ -1,11 +1,13 @@
 package org.marllon.caip.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.marllon.caip.dto.request.UpdateUserRolesRequest;
 import org.marllon.caip.dto.request.UserRequest;
 import org.marllon.caip.dto.response.UserResponse;
 import org.marllon.caip.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,61 +22,66 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/users")
+@RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
     private final UserService service;
 
-    public UserController(UserService service) {
-        this.service = service;
+    /**
+     * rota publica para quem está logado
+     * */
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getMe() {
+        // Qualquer usuário com token válido pode ver seu próprio perfil
+        return ResponseEntity.ok(service.getAuthenticatedUser());
     }
 
+    /**
+     * Rotas Administrativas
+     * */
     @GetMapping
-    public ResponseEntity<List<UserResponse>> findAll(){
-        List<UserResponse> list = service.findAll();
-        return ResponseEntity.ok().body(list);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<List<UserResponse>> findAll() {
+        return ResponseEntity.ok(service.findAll());
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<UserResponse> findById(@PathVariable Long id) {
-
-        UserResponse obj = service.findById(id);
-        return ResponseEntity.ok().body(obj);
+        return ResponseEntity.ok(service.findById(id));
     }
 
+    /**
+     * Usuarios se cadastram por meio de um endpoint POST em AuthController  /api/auth/register.
+     * Esta rota é para o Admin forçar a criação de alguém.
+     * */
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<UserResponse> insert(@RequestBody @Valid UserRequest dto) {
         UserResponse created = service.create(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(created.id()).toUri();
+                .buildAndExpand(created.id())
+                .toUri();
         return ResponseEntity.created(uri).body(created);
     }
 
-    @DeleteMapping(value = "/{id}")
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<UserResponse> update(@PathVariable Long id, @RequestBody @Valid UserRequest user) {
+        return ResponseEntity.ok(service.update(id, user));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
-
-    }
-
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<UserResponse> update(@PathVariable Long id, @RequestBody  @Valid UserRequest user) {
-        UserResponse update = service.update(id, user);
-        return ResponseEntity.ok().body(update);
     }
 
     @PutMapping("/{id}/roles")
-    public ResponseEntity<UserResponse> updateRoles(
-            @PathVariable Long id,
-            @RequestBody UpdateUserRolesRequest request
-    ) {
-        UserResponse updated = service.updateRoles(id, request.roles());
-        return ResponseEntity.ok(updated);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<UserResponse> updateRoles(@PathVariable Long id, @RequestBody @Valid UpdateUserRolesRequest request) {
+        return ResponseEntity.ok(service.updateRoles(id, request.roles()));
     }
 
-    // Novo endpoint: perfil do autenticado
-    @GetMapping("/me")
-    public ResponseEntity<UserResponse> getMe() {
-        UserResponse me = service.getAuthenticatedUser();
-        return ResponseEntity.ok(me);
-    }
 }
