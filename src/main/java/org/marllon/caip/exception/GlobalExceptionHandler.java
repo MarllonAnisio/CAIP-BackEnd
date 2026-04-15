@@ -77,4 +77,42 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
 
+    /**
+     * capturando erros de login e acesso a recursos protegidos (erro 401 ou 403)
+     * */
+    @ExceptionHandler({AccessDeniedException.class, BadCredentialsException.class})
+    public ResponseEntity<StandardError> handleSecurity(Exception e, HttpServletRequest request) {
+
+        HttpStatus status = (e instanceof BadCredentialsException) ? HttpStatus.UNAUTHORIZED : HttpStatus.FORBIDDEN;
+        String message = (e instanceof BadCredentialsException) ? "Email ou senha incorretos" : "Você não tem permissão para acessar este recurso";
+
+        StandardError err = new StandardError(
+                Instant.now(),
+                status.value(),
+                "Erro de Segurança",
+                message,
+                request.getRequestURI(),
+                null
+        );
+        return ResponseEntity.status(status).body(err);
+    }
+
+    /**
+     * Fallback para erros inesperados (erro 500)
+     * */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<StandardError> handleUnexpectedException(Exception e, HttpServletRequest request) {
+        log.error("Erro interno inesperado", e);
+
+        StandardError err = new StandardError(
+                Instant.now(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Erro Interno do Servidor",
+                "Ocorreu um erro inesperado. Tente novamente mais tarde.",
+                request.getRequestURI(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
+    }
+
 }
