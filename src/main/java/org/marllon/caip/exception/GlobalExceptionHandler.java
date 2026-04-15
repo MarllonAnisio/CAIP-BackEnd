@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.Instant;
+import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -23,7 +24,7 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
-     * Captura regras de negocio disparadas pelo sistema 400
+     * Captura regras de negocio disparadas pelo sistema (erro 400)
      * */
     @ExceptionHandler(BusinessRuleException.class)
     public ResponseEntity<StandardError> handleBusinessRule(BusinessRuleException e, HttpServletRequest request) {
@@ -38,6 +39,42 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
     }
 
+    /**
+     * Capturando erros do banco de dados como not found (erro 404)
+     * */
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<StandardError> handleNotFound(EntityNotFoundException e, HttpServletRequest request) {
+        StandardError err = new StandardError(
+                Instant.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "Recurso não encontrado",
+                e.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
+    }
 
+    /**
+     * capturando erros de validação de json do (@valid) (erro 400)
+     * */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<StandardError> handleValidation(MethodArgumentNotValidException e, HttpServletRequest request) {
+        List<ValidationError> validationErrors = e.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(err -> new ValidationError(err.getField(), err.getDefaultMessage()))
+                .toList();
+
+        StandardError err = new StandardError(
+                Instant.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Erro de Validação de Dados",
+                "Alguns campos são inválidos. Verifique os detalhes.",
+                request.getRequestURI(),
+                validationErrors
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+    }
 
 }
