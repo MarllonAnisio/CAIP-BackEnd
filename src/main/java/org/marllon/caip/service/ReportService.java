@@ -1,5 +1,6 @@
 package org.marllon.caip.service;
 
+
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.marllon.caip.dto.request.ReportRequest;
@@ -16,15 +17,14 @@ import org.marllon.caip.service.mapper.ReportMapper;
 import org.marllon.caip.service.mapper.UserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,10 +41,10 @@ public class ReportService {
     private final LocationService locationService;
 
     @Transactional(readOnly = true)
-    public ReportResponse findById(Long id) throws Exception {
+    @Cacheable(value = "tb_report", key = "id")
+    public ReportResponse findById(Long id) {
         Report report = reportRepository.findById(id)
-                .orElseThrow(() -> new Exception("Report not found with id: " + id));
-
+                .orElseThrow(() -> new EntityNotFoundException("Report not found with id: " + id));
         return reportMapper.toResponse(report);
     }
     @Transactional(readOnly = true)
@@ -52,7 +52,7 @@ public class ReportService {
     public List<ReportResponse> findMyReports() {
         User me = getAuthenticatedUser();
 
-        return reportRepository.findAllByAudit_CreatedByAndIsClosedFalse(me)
+        return reportRepository.findAllByAudit_CreatedBy(me)
                 .stream()
                 .map(reportMapper::toResponse)
                 .toList();
@@ -62,7 +62,7 @@ public class ReportService {
     @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_LIBRARIAN') or hasRole('ADMIN')")
     public List<ReportResponse> findMyActiveReports() {
         User me = getAuthenticatedUser();
-        return reportRepository.findAllByAudit_CreatedBy(me)
+        return reportRepository.findAllByAudit_CreatedByAndIsClosedFalse(me)
                 .stream()
                 .map(reportMapper::toResponse)
                 .toList();
@@ -87,7 +87,7 @@ public class ReportService {
     }
     @Transactional(readOnly = true)
     @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN','ADMIN')")
-    public List<ReportResponse> findByStatus() throws Exception {
+    public List<ReportResponse> findClosedReports() throws Exception {
         return reportRepository.findAllByIsClosedIsTrue()
                 .stream()
                 .map(reportMapper::toResponse)
