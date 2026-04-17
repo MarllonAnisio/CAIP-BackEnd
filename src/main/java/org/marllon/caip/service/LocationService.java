@@ -34,12 +34,18 @@ public class LocationService {
                 .map(locationMapper::toResponse)
                 .toList();
     }
-
     @Transactional(readOnly = true)
     @Cacheable(key = "#id")
-    public Location findById(Long id) {
+    public Location findEntityById(Long id) {
         return locationRepository.findById(id)
                 .orElseThrow(() -> new LocalNaoEncontradoException("Localização não encontrada com ID: " + id));
+    }
+
+
+    @Transactional(readOnly = true)
+    public LocationResponse findById(Long id) {
+        Location location = findEntityById(id);
+        return locationMapper.toResponse(location);
     }
 
     @Transactional
