@@ -17,4 +17,3 @@ public interface LocationMapper {
 
 }
 
-// https://youtu.be/dw341XYIp4c?si=nmGAgumMHasOug7Q
