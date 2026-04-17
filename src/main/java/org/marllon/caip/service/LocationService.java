@@ -69,7 +69,7 @@ public class LocationService {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_LIBRARIAN')")
     @CacheEvict(allEntries = true)
     public LocationResponse update(Long id, LocationRequest request) {
-        Location location = findById(id);
+        Location location = findEntityById(id);
 
         if (!location.getName().equalsIgnoreCase(request.name()) &&
                 locationRepository.existsByNameIgnoreCase(request.name())) {
@@ -85,7 +85,7 @@ public class LocationService {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @CacheEvict(allEntries = true)
     public void delete(Long id) {
-        Location location = findById(id);
+        Location location = findEntityById(id);
         locationRepository.delete(location);
     }
 }

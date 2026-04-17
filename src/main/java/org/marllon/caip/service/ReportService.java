@@ -97,7 +97,7 @@ public class ReportService {
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ReportResponse save(ReportRequest report) {
         User me = getAuthenticatedUser();
-        Location location = locationService.findById(report.locationId());
+        Location location = locationService.findEntityById(report.locationId());
 
         Report reportConverted = report.toEntity(me, location);
 
@@ -151,7 +151,7 @@ public class ReportService {
         Report existingReport = reportRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Relatório não encontrado com o ID: " + id));
 
-        Location location = locationService.findById(request.locationId());
+        Location location = locationService.findEntityById(request.locationId());
 
         reportMapper.updateEntity(existingReport, request);
         existingReport.setLocation(location);

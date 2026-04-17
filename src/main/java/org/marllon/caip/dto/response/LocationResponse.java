@@ -1,4 +1,6 @@
 package org.marllon.caip.dto.response;
 
-public record LocationResponse(String name) {
-}
+public record LocationResponse(
+        Long id,
+        String name
+) {}
