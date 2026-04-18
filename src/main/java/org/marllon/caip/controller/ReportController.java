@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -86,7 +87,6 @@ public class ReportController {
         return ResponseEntity.ok(reportService.findAllActive());
     }
 
-
     @GetMapping("/all-closed")
     @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
     public ResponseEntity<List<ReportResponse>> findAllClosed() throws Exception {
@@ -100,9 +100,20 @@ public class ReportController {
     }
 
     @PostMapping("/link-reports")
-    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    public ResponseEntity<ReportResponse> linkReports(Long perdidoId, Long encontradoId) {
+    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    public ResponseEntity<ReportResponse> linkReports(
+            @RequestParam Long perdidoId,
+            @RequestParam Long encontradoId
+    ) {
         return ResponseEntity.ok(reportService.linkReports(perdidoId, encontradoId));
     }
+
+    @DeleteMapping("/hard-delete/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> hardDelete(@PathVariable Long id){
+        reportService.hardDeleteReport(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }
