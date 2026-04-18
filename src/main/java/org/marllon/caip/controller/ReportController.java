@@ -6,6 +6,7 @@ import org.marllon.caip.dto.response.ReportResponse;
 import org.marllon.caip.service.ReportService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,6 +42,22 @@ public class ReportController {
         return ResponseEntity.ok(reportService.findAllForStaff());
     }
 
+    @GetMapping("/my-reports")
+    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    public ResponseEntity<List<ReportResponse>> findMyReports() {
+        return ResponseEntity.ok(reportService.findMyReports());
+    }
+
+    @GetMapping("/my-active-reports")
+    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    public ResponseEntity<List<ReportResponse>> findMyActiveReports() {
+        return ResponseEntity.ok(reportService.findMyActiveReports());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ReportResponse> findById(Long id) {
+        return ResponseEntity.ok(reportService.findById(id));
+    }
 
 
 }
