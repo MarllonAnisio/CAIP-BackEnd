@@ -2,6 +2,7 @@ package org.marllon.caip.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.marllon.caip.controller.doc.ReportControllerDoc;
 import org.marllon.caip.dto.request.ReportRequest;
 import org.marllon.caip.dto.response.ReportResponse;
 import org.marllon.caip.service.ReportService;
@@ -23,9 +24,9 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/reports") // Padronização da rota raiz
+@RequestMapping("/api/reports")
 @RequiredArgsConstructor
-public class ReportController {
+public class ReportController implements ReportControllerDoc {
 
     private final ReportService reportService;
 
@@ -114,6 +115,5 @@ public class ReportController {
         reportService.hardDeleteReport(id);
         return ResponseEntity.noContent().build();
     }
-
 
 }
