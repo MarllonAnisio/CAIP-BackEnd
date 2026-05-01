@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.marllon.caip.dto.request.ReportRequest;
 import org.marllon.caip.dto.response.ReportResponse;
+import org.marllon.caip.exception.reports_exceptions.StatusConfigurationException;
 import org.marllon.caip.model.Location;
 import org.marllon.caip.model.Report;
 import org.marllon.caip.model.StatusStep;
@@ -17,7 +18,9 @@ import org.marllon.caip.service.mapper.ReportMapper;
 import org.marllon.caip.service.mapper.UserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -41,12 +44,13 @@ public class ReportService {
     private final LocationService locationService;
 
     @Transactional(readOnly = true)
-    @Cacheable(value = "tb_report", key = "id")
+    @Cacheable(value = "tb_report", key = "#id")
     public ReportResponse findById(Long id) {
         Report report = reportRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Report not found with id: " + id));
         return reportMapper.toResponse(report);
     }
+
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_LIBRARIAN') or hasRole('ADMIN')")
     public List<ReportResponse> findMyReports() {
@@ -87,7 +91,7 @@ public class ReportService {
     }
     @Transactional(readOnly = true)
     @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN','ADMIN')")
-    public List<ReportResponse> findClosedReports() throws Exception {
+    public List<ReportResponse> findClosedReports() {
         return reportRepository.findAllByIsClosedIsTrue()
                 .stream()
                 .map(reportMapper::toResponse)
@@ -102,8 +106,7 @@ public class ReportService {
         Report reportConverted = report.toEntity(me, location);
 
         StatusStep status = statusStepRepository.findByName(reportConverted.getTypeReport().name())
-                .orElseThrow(() -> new IllegalArgumentException("Status inicial não encontrado para tipo: " + reportConverted.getTypeReport().name()));
-
+                .orElseThrow(() -> new StatusConfigurationException("Atenção: O status inicial '" + reportConverted.getTypeReport().name() + "' não está cadastrado no sistema."));
         reportConverted.setStatusSteps(new ArrayList<>(List.of(status)));
 
         log.info("Saving report {}", reportConverted);
@@ -114,6 +117,7 @@ public class ReportService {
     }
     @Transactional
     @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_LIBRARIAN') or hasRole('ADMIN')")
+    @CacheEvict(value = "tb_report", key = "#reportId")
     public void deleteReport(Long reportId) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new EntityNotFoundException("Relatório não encontrado"));
@@ -140,6 +144,7 @@ public class ReportService {
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
+    @CacheEvict(value = "tb_report", key = "#reportId")
     public void hardDeleteReport(Long reportId) {
         reportRepository.hardDeleteById(reportId);
     }
@@ -162,8 +167,20 @@ public class ReportService {
         return reportMapper.toResponse(savedReport);
     }
 
+    public void closeReport(Long reportId) {
+        Report existingReport = reportRepository.findById(reportId)
+                .orElseThrow(() -> new EntityNotFoundException("Relatório não encontrado com o ID: " + reportId));
+
+        existingReport.setClosed(true);
+        reportRepository.save(existingReport);
+    }
+
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    @Caching(evict = {
+            @CacheEvict(value = "tb_report", key = "#perdidoId"),
+            @CacheEvict(value = "tb_report", key = "#encontradoId")
+    })
     public ReportResponse linkReports(Long perdidoId, Long encontradoId) {
 
         // 1. Buscas Seguras
@@ -197,8 +214,6 @@ public class ReportService {
 
         return reportMapper.toResponse(salvo);
     }
-
-
     private User getAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || auth.getName() == null) {
