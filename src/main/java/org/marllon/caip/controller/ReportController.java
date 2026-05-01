@@ -33,26 +33,29 @@ public class ReportController implements ReportControllerDoc {
     /**
      *  Rotas publicas para uso de alunos logados
      * */
-
     @GetMapping("/{id}")
-    public ResponseEntity<ReportResponse> findById(Long id) {
+    @Override
+    public ResponseEntity<ReportResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(reportService.findById(id));
     }
 
     @GetMapping("/my-active-reports")
     @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    @Override
     public ResponseEntity<List<ReportResponse>> getMyReports() {
         return ResponseEntity.ok(reportService.findMyActiveReports());
     }
 
     @GetMapping("/my-reports")
     @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    @Override
     public ResponseEntity<List<ReportResponse>> findMyReports() {
         return ResponseEntity.ok(reportService.findMyReports());
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    @Override
     public ResponseEntity<Void> delete(@PathVariable Long id) {
 
         reportService.deleteReport(id);
@@ -62,46 +65,53 @@ public class ReportController implements ReportControllerDoc {
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public ResponseEntity<ReportResponse> save(ReportRequest request) {
+    @Override
+    public ResponseEntity<ReportResponse> save(@RequestBody @Valid ReportRequest request) {
+
+        ReportResponse savedReport = reportService.save(request);
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequestUri()
                 .path("/{id}")
-                .buildAndExpand(reportService.save(request).id()).toUri();
+                .buildAndExpand(savedReport.id()).toUri();
 
-        return ResponseEntity.created(uri).body(reportService.save(request));
+        return ResponseEntity.created(uri).body(savedReport);
     }
 
     /**
      * Rotas privadas
      * */
-
     @GetMapping("/all-staff")
     @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    @Override
     public ResponseEntity<List<ReportResponse>> findAllForStaff() {
         return ResponseEntity.ok(reportService.findAllForStaff());
     }
 
     @GetMapping("/all-active")
     @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
-    public ResponseEntity<List<ReportResponse>> findAllActive() throws Exception {
+    @Override
+    public ResponseEntity<List<ReportResponse>> findAllActive(){
         return ResponseEntity.ok(reportService.findAllActive());
     }
 
     @GetMapping("/all-closed")
     @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
-    public ResponseEntity<List<ReportResponse>> findAllClosed() throws Exception {
+    @Override
+    public ResponseEntity<List<ReportResponse>> findAllClosed(){
         return ResponseEntity.ok(reportService.findClosedReports());
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    @Override
     public ResponseEntity<ReportResponse> update(@PathVariable Long id, @RequestBody @Valid ReportRequest request) {
         return ResponseEntity.ok(reportService.update(id, request));
     }
 
     @PostMapping("/link-reports")
     @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    @Override
     public ResponseEntity<ReportResponse> linkReports(
             @RequestParam Long perdidoId,
             @RequestParam Long encontradoId
@@ -111,8 +121,17 @@ public class ReportController implements ReportControllerDoc {
 
     @DeleteMapping("/hard-delete/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Override
     public ResponseEntity<Void> hardDelete(@PathVariable Long id){
         reportService.hardDeleteReport(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/close/{id}")
+    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
+    @Override
+    public ResponseEntity<Void> closeReport(@PathVariable Long id) {
+        reportService.closeReport(id);
         return ResponseEntity.noContent().build();
     }
 
