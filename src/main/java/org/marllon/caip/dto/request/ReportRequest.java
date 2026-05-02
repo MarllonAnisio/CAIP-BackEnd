@@ -39,7 +39,7 @@ public record ReportRequest(
         if (this.position != null && this.position.latitude() != null && this.position.longitude() != null) {
             positionEntity = new Position();
             positionEntity.setLatidude(this.position.latitude());
-            positionEntity.setLongitude(this.position.latitude());
+            positionEntity.setLongitude(this.position.longitude());
         }
 
         return Report.builder()

@@ -42,7 +42,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health,info,metrics"
+        include: "health,info"
   health:
     readinessstate:
       enabled: true
@@ -50,6 +50,7 @@ management:
       enabled: true
   endpoint:
     health:
+      show-details: when_authorized
       probes:
         enabled: true
   info:
