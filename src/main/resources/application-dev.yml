@@ -4,9 +4,9 @@ server:
 spring:
   datasource:
 
-    url: ${DATA_POSTGRES_URL:jdbc:postgresql://localhost:5432/****}
-    username: ${DATA_POSTGRES_USERNAME:****}
-    password: ${DATA_POSTGRES_PASSWORD:****}
+    url: ${DATA_POSTGRES_URL:jdbc:postgresql://localhost:5432/postgres}
+    username: ${DATA_POSTGRES_USERNAME:postgres}
+    password: ${DATA_POSTGRES_PASSWORD:1234}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -19,9 +19,9 @@ spring:
 
 cloudinary:
   api:
-    cloud_name: ${CLOUDINARY_CLOUD_NAME:****}
-    key: ${CLOUDINARY_API_KEY:****}
-    secret: ${CLOUDINARY_API_SECRET:****}
+    cloud_name: ${CLOUDINARY_CLOUD_NAME:demo}
+    key: ${CLOUDINARY_API_KEY:default_key}
+    secret: ${CLOUDINARY_API_SECRET:default_secret}
 
 security:
   jwt:

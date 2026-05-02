@@ -4,15 +4,28 @@ services:
     image: postgres:16-alpine
     container_name: caip-postgres
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: ${DATA_POSTGRES_USERNAME:-*****}
-      POSTGRES_PASSWORD: ${DATA_POSTGRES_PASSWORD:-*****}
+      POSTGRES_DB: caip_db
+      POSTGRES_USER: ${DATA_POSTGRES_USERNAME:-****}
+      POSTGRES_PASSWORD: ${DATA_POSTGRES_PASSWORD:-****}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DATA_POSTGRES_USERNAME:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Novo esquema pra segurança usando redis para cache
+  redis:
+    image: redis:7-alpine
+    container_name: caip-redis
+    ports:
+      - "6379:6379"
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -24,14 +37,19 @@ services:
       - "8080:8080"
     environment:
       PROFILE_ACTIVE: ${PROFILE_ACTIVE:-dev}
-      DATA_POSTGRES_URL: jdbc:postgresql://postgres:5432/*****
-      DATA_POSTGRES_USERNAME: ${DATA_POSTGRES_USERNAME:-*****}
-      DATA_POSTGRES_PASSWORD: ${DATA_POSTGRES_PASSWORD:-*****}
-      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-*****}
-      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-*****}
-      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-*****}
+      DATA_POSTGRES_URL: jdbc:postgresql://postgres:5432/****
+      DATA_POSTGRES_USERNAME: ${DATA_POSTGRES_USERNAME:-****}
+      DATA_POSTGRES_PASSWORD: ${DATA_POSTGRES_PASSWORD:-****}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-****}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-****}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-****}
+      # tem que avisar o infame do spring onde o redis vai estar
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     restart: on-failure
 
