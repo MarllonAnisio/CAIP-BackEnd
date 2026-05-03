@@ -3,28 +3,26 @@ server:
 
 spring:
   datasource:
-    url: ${DATA_POSTGRES_URL:jdbc:postgresql://localhost:5432/caip_db}
-    username: ${DATA_POSTGRES_USERNAME:postgres}
-    password: ${DATA_POSTGRES_PASSWORD:1234}
+    url: jdbc:postgresql://localhost:5432/${DB_NAME:caip_db}
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:1234}
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
 
-  cache:
-    type: redis
   data:
     redis:
       host: ${SPRING_DATA_REDIS_HOST:localhost}
       port: ${SPRING_DATA_REDIS_PORT:6379}
-      password: ${SPRING_DATA_REDIS_PASSWORD:senhaDoRedis}
+      password: ${SPRING_DATA_REDIS_PASSWORD:}
 
 cloudinary:
   api:
-    cloud_name: ${CLOUDINARY_CLOUD_NAME:seu_cloud_name}
-    key: ${CLOUDINARY_API_KEY:seu_api_key}
-    secret: ${CLOUDINARY_API_SECRET:seu_api_secret}
+    cloud_name: ${CLOUDINARY_CLOUD_NAME}
+    key: ${CLOUDINARY_API_KEY}
+    secret: ${CLOUDINARY_API_SECRET}
 
 security:
   jwt:

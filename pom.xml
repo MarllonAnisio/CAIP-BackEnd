@@ -23,8 +23,11 @@
         <java.version>17</java.version>
         <springdoc.version>2.8.5</springdoc.version>
         <mapstruct.version>1.6.3</mapstruct.version>
+        <!-- 👇 O Sênior não deixa pontas soltas. Versão do Lombok declarada! -->
+        <lombok.version>1.18.36</lombok.version>
         <jjwt.version>0.12.5</jjwt.version>
         <bucket4j.version>0.12.7</bucket4j.version>
+        <bucket4j-core.version>8.10.1</bucket4j-core.version>
         <redisson.version>3.40.1</redisson.version>
         <cloudinary.version>1.38.0</cloudinary.version>
     </properties>
@@ -87,7 +90,7 @@
         <!-- ====================================================================== -->
         <!-- CACHE & RATE LIMITING (Redis, Redisson, JCache, Bucket4j)              -->
         <!-- ====================================================================== -->
-        <!-- 1. Segurança contra Força Bruta -->
+        <!-- 1. O Starter do Bucket4j -->
         <dependency>
             <groupId>com.giffing.bucket4j.spring.boot.starter</groupId>
             <artifactId>bucket4j-spring-boot-starter</artifactId>
@@ -100,7 +103,7 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
-        <!-- 3. Spring Data Redis (Expulsando o Lettuce) -->
+        <!-- 3. Spring Data Redis (Expulsando o Lettuce nativo) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
@@ -112,17 +115,24 @@
             </exclusions>
         </dependency>
 
-        <!-- 4. O Novo Motor: Redisson (Sabe falar JCache nativamente) -->
+        <!-- 4. O Motor: Redisson (Sabe falar JCache nativamente) -->
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson-spring-boot-starter</artifactId>
             <version>${redisson.version}</version>
         </dependency>
 
-        <!-- 5. A Caneta Oficial do Bucket4j (JSR-107) -->
+        <!-- 5. A Interface Oficial do JCache (JSR-107) -->
         <dependency>
             <groupId>javax.cache</groupId>
             <artifactId>cache-api</artifactId>
+        </dependency>
+
+        <!-- 👇 A PONTE REAL: Ensinando o Bucket4j a consumir o JCache -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j-jcache</artifactId>
+            <version>${bucket4j-core.version}</version>
         </dependency>
 
         <!-- ====================================================================== -->
@@ -170,7 +180,7 @@
 
     <build>
         <plugins>
-            <!-- Motor do Spring Boot (Obrigatório para gerar o Fat JAR) -->
+            <!-- Motor do Spring Boot -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -184,7 +194,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Configuração do Compilador (Unindo Lombok e MapStruct) -->
+            <!-- Configuração do Compilador -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
