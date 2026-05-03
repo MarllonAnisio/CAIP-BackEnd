@@ -1,15 +1,12 @@
 spring:
   application:
     name: Caip-BackEnd
-  # 👈 Aqui é o ponto central. Ele procura o perfil na máquina (ou .env).
-  # Se não achar nada em lugar nenhum, ele sobe como 'dev' por segurança.
   profiles:
     active: ${PROFILE_ACTIVE:dev}
 
   servlet:
     multipart:
-      # 👈 O Toque do Sênior: Limite rigoroso. Se o Cloudinary aguenta imagens, nós vamos processar imagens otimizadas.
-      # 10MB é o teto máximo para uma imagem de celular em altíssima resolução. Não precisamos mais que isso.
+
       max-file-size: 10MB
       max-request-size: 12MB
 
@@ -17,7 +14,6 @@ spring:
 server:
   # Porta padrão da aplicação, independentemente do ambiente.
   port: 8080
-  # 👈 REPAROU? Eu apaguei a configuração de sessão. APIs REST com JWT são STATELESS!
 
 # ===================================================================
 # CONFIGURAÇÕES DA APLICAÇÃO (Customizadas)
@@ -26,13 +22,12 @@ cors:
   allowed-origins: "http://localhost:5173,http://localhost:4173,http://localhost:5174"
 # Configurações do Swagger (Springdoc)
 springdoc:
-  # O caminho para o desenvolvedor acessar a documentação
+
   swagger-ui:
     path: /swagger-ui.html
     enabled: true
-    operations-sorter: method # Organiza por GET, POST, PUT (faz mais sentido visualmente que 'alpha')
+    operations-sorter:
     deep-linking: true
-    # 👈 Ocultar endpoints internos do Actuator do Swagger para os clientes não ficarem bisbilhotando a saúde da API
     show-actuator: false
   api-docs:
     enabled: true
@@ -50,22 +45,21 @@ logging:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%-5level) %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %msg%n"
   level:
     root: INFO
-    # 👇 ARRUMEI O PACOTE! Agora ele vai logar os detalhes do SEU projeto.
+
     org.marllon.caip: DEBUG
-    # Em Dev, nós queremos ver o que a segurança está barrando.
+
     org.springframework.security: DEBUG
-    # Opcional: Descomente a linha abaixo quando for trabalhar com banco de dados para ver os SQLs.
-    # org.hibernate.SQL: DEBUG
+
 
 management:
   endpoints:
     web:
       exposure:
-        # Expondo endpoints vitais para Kubernetes/Docker verificarem se a app está viva.
+
         include: health,info,metrics
   endpoint:
     health:
-      # Não mostre os detalhes internos do banco para usuários anônimos na web.
+
       show-details: when_authorized
       probes:
         enabled: true
@@ -81,7 +75,7 @@ management:
 # ===================================================================
 bucket4j:
   enabled: true
-  # Definimos que ele deve procurar a conexão JCache (que nós amarramos ao Redisson)
+  # Configurações do Redis que ele deve procurar a conexão JCache (que amarramos ao Redisson)
   cache-to-use: jcache
   filters:
     - cache-name: rate-limit-login
