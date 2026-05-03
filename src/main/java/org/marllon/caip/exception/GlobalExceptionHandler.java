@@ -2,11 +2,9 @@ package org.marllon.caip.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.marllon.caip.exception.BusinessRuleException;
-import org.marllon.caip.exception.StandardError;
+import lombok.extern.slf4j.Slf4j;
 import org.marllon.caip.exception.StandardError.ValidationError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.marllon.caip.exception.auth_exceptions.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -18,16 +16,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.Instant;
 import java.util.List;
 
+@Slf4j // 👈 Injeta o 'log' automaticamente na compilação
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
     /**
      * Captura regras de negocio disparadas pelo sistema (erro 400)
-     * */
+     */
     @ExceptionHandler(BusinessRuleException.class)
     public ResponseEntity<StandardError> handleBusinessRule(BusinessRuleException e, HttpServletRequest request) {
+        // ⚠️ Um Sênior sempre avisa nos logs quando uma regra de negócio é violada
+        log.warn("Business Rule Violation [{}]: {}", request.getRequestURI(), e.getMessage());
+
         StandardError err = new StandardError(
                 Instant.now(),
                 HttpStatus.BAD_REQUEST.value(),
@@ -41,9 +41,11 @@ public class GlobalExceptionHandler {
 
     /**
      * Capturando erros do banco de dados como not found (erro 404)
-     * */
+     */
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<StandardError> handleNotFound(EntityNotFoundException e, HttpServletRequest request) {
+        log.info("Resource Not Found [{}]: {}", request.getRequestURI(), e.getMessage());
+
         StandardError err = new StandardError(
                 Instant.now(),
                 HttpStatus.NOT_FOUND.value(),
@@ -56,10 +58,12 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * capturando erros de validação de json do (@valid) (erro 400)
-     * */
+     * Capturando erros de validação de json do (@valid) (erro 400)
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<StandardError> handleValidation(MethodArgumentNotValidException e, HttpServletRequest request) {
+        log.warn("Validation Error [{}]", request.getRequestURI());
+
         List<ValidationError> validationErrors = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -78,10 +82,29 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * capturando erros de login e acesso a recursos protegidos (erro 401 ou 403)
-     * */
+     * Capturando erros do nosso Filtro JWT customizado (A peça que faltava!)
+     */
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<StandardError> handleUnauthorized(UnauthorizedException e, HttpServletRequest request) {
+        log.warn("Unauthorized Access Attempt [{}]: {}", request.getRequestURI(), e.getMessage());
+
+        StandardError err = new StandardError(
+                Instant.now(),
+                HttpStatus.UNAUTHORIZED.value(),
+                "Não Autorizado",
+                e.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(err);
+    }
+
+    /**
+     * Capturando erros de login padrão e permissões de Roles (erro 401 ou 403)
+     */
     @ExceptionHandler({AccessDeniedException.class, BadCredentialsException.class})
     public ResponseEntity<StandardError> handleSecurity(Exception e, HttpServletRequest request) {
+        log.warn("Security Error [{}]: {}", request.getRequestURI(), e.getMessage());
 
         HttpStatus status = (e instanceof BadCredentialsException) ? HttpStatus.UNAUTHORIZED : HttpStatus.FORBIDDEN;
         String message = (e instanceof BadCredentialsException) ? "Email ou senha incorretos" : "Você não tem permissão para acessar este recurso";
@@ -98,11 +121,12 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Fallback para erros inesperados (erro 500)
-     * */
+     * Fallback para erros catastróficos inesperados (erro 500)
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<StandardError> handleUnexpectedException(Exception e, HttpServletRequest request) {
-        log.error("Erro interno inesperado", e);
+        // Como esse é um erro grosseiro, tem que ter Stracktrace completo
+        log.error("ERRO INTERNO CRÍTICO em [{}]: ", request.getRequestURI(), e);
 
         StandardError err = new StandardError(
                 Instant.now(),
@@ -114,5 +138,4 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
     }
-
 }
