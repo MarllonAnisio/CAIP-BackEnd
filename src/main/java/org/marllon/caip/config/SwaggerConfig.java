@@ -1,13 +1,13 @@
 package org.marllon.caip.config;
 
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
-import io.swagger.v3.oas.models.servers.Server;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.tags.Tag;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,29 +17,21 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
-@SecurityScheme(
-        name = "bearerAuth",
-        type = SecuritySchemeType.HTTP,
-        scheme = "bearer",
-        bearerFormat = "JWT"
-)
 public class SwaggerConfig {
 
-    @Value("${swagger-info.server-url}")
-    private String serverUrl;
-
-    @Value("${swagger-info.ambient}")
+    // 💡 O Toque Sênior: O ':Local' no final garante que se a variável não
+    // existir no application.yml, a API NÃO VAI QUEBRAR. Ela assume "Local".
+    @Value("${swagger-info.ambient:Local}")
     private String ambientType;
 
     @Bean
     public OpenAPI customOpenAPI() {
+        final String securitySchemeName = "bearerAuth";
+
         return new OpenAPI()
-                .servers(List.of(
-                        new Server().url(serverUrl).description(ambientType)
-                ))
                 .info(new Info()
                         .title("Doc. CAIP - API de Reports de Itens Perdidos")
-                        .description("API do sistema CAIP responsável pela gestão dos reports de itens achados e perdidos no IFPB – Campus Monteiro.")
+                        .description("API do sistema CAIP responsável pela gestão dos reports de itens achados e perdidos no IFPB – Campus Monteiro. \n\n**Ambiente Atual:** " + ambientType)
                         .version("1.0.0")
                         .contact(new Contact()
                                 .name("Marllon Anisio")
@@ -50,9 +42,18 @@ public class SwaggerConfig {
                                 .name("Apache 2.0")
                                 .url("http://www.apache.org/licenses/LICENSE-2.0.html")
                         )
-                );
+                )
+                // 👇 Centralizamos a segurança do JWT de forma puramente programática
+                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
+                .components(new Components()
+                        .addSecuritySchemes(securitySchemeName, new SecurityScheme()
+                                .name(securitySchemeName)
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")));
     }
 
+    // 👇 Mantive a sua excelente separação de rotas!
     @Bean
     public GroupedOpenApi publicApiGroup() {
         return GroupedOpenApi.builder()
