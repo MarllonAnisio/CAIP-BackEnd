@@ -1,0 +1,180 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="Administrador (generated)" id="1777919543764-1">
+        <createTable tableName="blacklisted_tokens">
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expires_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="blacklisted_tokens_pkey"/>
+            </column>
+            <column name="token" type="VARCHAR(2048)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-2">
+        <createTable tableName="tb_report">
+            <column name="deleted" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_closed" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position_latitude" type="FLOAT8"/>
+            <column name="position_longitude" type="FLOAT8"/>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="BIGINT"/>
+            <column name="date_reclamed" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="date_report" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fk_collected_by" type="BIGINT"/>
+            <column name="fk_found_by" type="BIGINT"/>
+            <column name="fk_location_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="tb_report_pkey"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="updated_by" type="BIGINT"/>
+            <column name="title" type="VARCHAR(130)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image_url" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type_report" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-3">
+        <createTable tableName="tb_status_step">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="tb_status_step_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="color" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-4">
+        <createTable tableName="tb_users">
+            <column name="is_active" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="tb_users_pkey"/>
+            </column>
+            <column name="registration" type="VARCHAR(12)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-5">
+        <createIndex indexName="idx_blacklisted_expires_at" tableName="blacklisted_tokens">
+            <column name="expires_at"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-6">
+        <addUniqueConstraint columnNames="token" constraintName="blacklisted_tokens_token_key" tableName="blacklisted_tokens"/>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-7">
+        <addUniqueConstraint columnNames="token" constraintName="idx_blacklisted_token" tableName="blacklisted_tokens"/>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-8">
+        <addUniqueConstraint columnNames="name" constraintName="tb_status_step_name_key" tableName="tb_status_step"/>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-9">
+        <addUniqueConstraint columnNames="registration" constraintName="tb_users_registration_key" tableName="tb_users"/>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-10">
+        <createTable tableName="report_status_step">
+            <column name="fk_report_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fk_status_step_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-11">
+        <createTable tableName="tb_locations">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="tb_locations_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-12">
+        <createTable tableName="tb_role">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="tb_role_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-13">
+        <createTable tableName="tb_user_role">
+            <column name="fk_role_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fk_user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-14">
+        <addForeignKeyConstraint baseColumnNames="fk_role_id" baseTableName="tb_user_role" constraintName="fk2mtlpvhtqfoivgc7aknfrved" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tb_role" validate="true"/>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-15">
+        <addForeignKeyConstraint baseColumnNames="updated_by" baseTableName="tb_report" constraintName="fkby56xpysxevotuee7p5ddkkkp" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tb_users" validate="true"/>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-16">
+        <addForeignKeyConstraint baseColumnNames="created_by" baseTableName="tb_report" constraintName="fkg7lli8yyvwxlsfrmmoo81m3oe" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tb_users" validate="true"/>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-17">
+        <addForeignKeyConstraint baseColumnNames="fk_status_step_id" baseTableName="report_status_step" constraintName="fki85w7b4wa6c0ujusb0m2bgyvk" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tb_status_step" validate="true"/>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-18">
+        <addForeignKeyConstraint baseColumnNames="fk_location_id" baseTableName="tb_report" constraintName="fkih1vdda8phx0h8apg4i0ng2j8" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tb_locations" validate="true"/>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-19">
+        <addForeignKeyConstraint baseColumnNames="fk_report_id" baseTableName="report_status_step" constraintName="fkke8uiwl4d1m21g4kbs0h3jj99" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tb_report" validate="true"/>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-20">
+        <addForeignKeyConstraint baseColumnNames="fk_found_by" baseTableName="tb_report" constraintName="fkm3cwbd6hygm0ywhemnqb65nx9" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tb_users" validate="true"/>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-21">
+        <addForeignKeyConstraint baseColumnNames="fk_collected_by" baseTableName="tb_report" constraintName="fkoitoi53hh0tre8wpuponev0r7" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tb_users" validate="true"/>
+    </changeSet>
+    <changeSet author="Administrador (generated)" id="1777919543764-22">
+        <addForeignKeyConstraint baseColumnNames="fk_user_id" baseTableName="tb_user_role" constraintName="fkp2uoyo3hovs226gitegk9jkc3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tb_users" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

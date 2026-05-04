@@ -17,19 +17,20 @@
     <description>Sistema CAIP</description>
 
     <!-- ====================================================================== -->
-    <!-- CENTRAL DE VERSÕES (O Arquiteto gerencia tudo por aqui)                -->
+    <!-- CENTRAL DE VERSÕES (Bibliotecas externas ao ecosistema do Spring)      -->
     <!-- ====================================================================== -->
     <properties>
         <java.version>17</java.version>
         <springdoc.version>2.8.5</springdoc.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <!-- 👇 O Sênior não deixa pontas soltas. Versão do Lombok declarada! -->
+        <!-- A versão do lombok tem que bater com a versão que o compilador usará -->
         <lombok.version>1.18.36</lombok.version>
         <jjwt.version>0.12.5</jjwt.version>
-        <bucket4j.version>0.12.7</bucket4j.version>
-        <bucket4j-core.version>8.10.1</bucket4j-core.version>
         <redisson.version>3.40.1</redisson.version>
         <cloudinary.version>1.38.0</cloudinary.version>
+        <!-- Versões cravadas e compatíveis com Spring Boot 3 -->
+        <bucket4j.starter.version>0.12.7</bucket4j.starter.version>
+        <bucket4j.core.version>8.10.1</bucket4j.core.version>
     </properties>
 
     <dependencies>
@@ -50,7 +51,7 @@
         </dependency>
 
         <!-- ====================================================================== -->
-        <!-- BANCO DE DADOS (JPA & Postgres)                                        -->
+        <!-- BANCO DE DADOS (JPA, PostgreSQL & Liquibase)                           -->
         <!-- ====================================================================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -60,6 +61,11 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <!-- A versão foi removida de propósito. O Spring Boot Parent injeta a correta. -->
         </dependency>
 
         <!-- ====================================================================== -->
@@ -90,20 +96,27 @@
         <!-- ====================================================================== -->
         <!-- CACHE & RATE LIMITING (Redis, Redisson, JCache, Bucket4j)              -->
         <!-- ====================================================================== -->
-        <!-- 1. O Starter do Bucket4j -->
+        <!-- Bucket4j Starter -->
         <dependency>
             <groupId>com.giffing.bucket4j.spring.boot.starter</groupId>
             <artifactId>bucket4j-spring-boot-starter</artifactId>
-            <version>${bucket4j.version}</version>
+            <version>${bucket4j.starter.version}</version>
         </dependency>
 
-        <!-- 2. Spring Cache Abstraction -->
+        <!-- Ponte do Bucket4j para o JCache -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j-jcache</artifactId>
+            <version>${bucket4j.core.version}</version>
+        </dependency>
+
+        <!-- Spring Cache Abstraction -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
-        <!-- 3. Spring Data Redis (Expulsando o Lettuce nativo) -->
+        <!-- Spring Data Redis (Sem o Lettuce, pois usaremos Redisson) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
@@ -115,24 +128,17 @@
             </exclusions>
         </dependency>
 
-        <!-- 4. O Motor: Redisson (Sabe falar JCache nativamente) -->
+        <!-- Redisson Starter (Motor do Redis) -->
         <dependency>
             <groupId>org.redisson</groupId>
             <artifactId>redisson-spring-boot-starter</artifactId>
             <version>${redisson.version}</version>
         </dependency>
 
-        <!-- 5. A Interface Oficial do JCache (JSR-107) -->
+        <!-- Interface Oficial do JCache (JSR-107) -->
         <dependency>
             <groupId>javax.cache</groupId>
             <artifactId>cache-api</artifactId>
-        </dependency>
-
-        <!-- 👇 A PONTE REAL: Ensinando o Bucket4j a consumir o JCache -->
-        <dependency>
-            <groupId>com.bucket4j</groupId>
-            <artifactId>bucket4j-jcache</artifactId>
-            <version>${bucket4j-core.version}</version>
         </dependency>
 
         <!-- ====================================================================== -->
@@ -194,22 +200,25 @@
                 </configuration>
             </plugin>
 
-            <!-- Configuração do Compilador -->
+            <!-- Configuração do Compilador Java (Lombok + MapStruct) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <annotationProcessorPaths>
+                        <!-- 1. Primeiro processamos o Lombok -->
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                             <version>${lombok.version}</version>
                         </path>
+                        <!-- 2. Ponte para o MapStruct entender o Lombok -->
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok-mapstruct-binding</artifactId>
                             <version>0.2.0</version>
                         </path>
+                        <!-- 3. Finalmente o MapStruct gera as classes de Mapper -->
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
