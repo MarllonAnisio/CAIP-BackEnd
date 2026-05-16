@@ -249,6 +249,7 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+            <!-- Configuração do Jacoco para cobertura de testes -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -267,6 +268,14 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- Configuração do OWASP Dependency Check para análise de vulnerabilidades -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>9.0.10</version> <configuration>
+                <failBuildOnCVSS>7.0</failBuildOnCVSS>
+            </configuration>
             </plugin>
         </plugins>
     </build>
