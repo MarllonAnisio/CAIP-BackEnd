@@ -8,6 +8,7 @@ import org.redisson.jcache.configuration.RedissonConfiguration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.util.StringUtils;
 
 import javax.cache.CacheManager;
@@ -16,6 +17,7 @@ import javax.cache.configuration.MutableConfiguration;
 import javax.cache.spi.CachingProvider;
 import java.util.List;
 
+@Profile("!test")
 @Configuration
 public class RedissonConfig {
 
@@ -48,18 +50,6 @@ public class RedissonConfig {
         return Redisson.create(config);
     }
 
-    /**
-     * JCache CacheManager backed by Redisson.
-     *
-     * Serves two consumers:
-     *   1. Spring Cache abstraction (@Cacheable, @CacheEvict) — Spring Boot wraps this
-     *      in JCacheCacheManager automatically when spring.cache.type=jcache.
-     *   2. Bucket4j rate limiting — directly uses javax.cache.CacheManager
-     *      when cache-to-use: jcache is configured.
-     *
-     * All required caches are pre-created here so both consumers find them
-     * immediately at startup, without relying on lazy creation.
-     */
     @Bean
     public CacheManager jCacheManager(RedissonClient redissonClient) {
         MutableConfiguration<Object, Object> jcacheConfig = new MutableConfiguration<>()
