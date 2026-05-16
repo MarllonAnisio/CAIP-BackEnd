@@ -23,14 +23,14 @@ spring:
     redis:
       host: ${SPRING_DATA_REDIS_HOST:localhost}
       port: ${SPRING_DATA_REDIS_PORT:6379}
-      password: ${SPRING_DATA_REDIS_PASSWORD:}
+      password: ${SPRING_DATA_REDIS_PASSWORD:1234}
 
 cloudinary:
   api:
-    cloud_name: ${CLOUDINARY_CLOUD_NAME}
-    key: ${CLOUDINARY_API_KEY}
-    secret: ${CLOUDINARY_API_SECRET}
+    cloud_name: ${CLOUDINARY_CLOUD_NAME:}
+    key: ${CLOUDINARY_API_KEY:}
+    secret: ${CLOUDINARY_API_SECRET:}
 
 security:
   jwt:
-    secret-base64: ${JWT_SECRET}
+    secret-base64: ${JWT_SECRET:Y29sb3F1ZV91bWFfY2hhdmVfYmFzZTY0X3NlZ3VyYV9hcXVp}
