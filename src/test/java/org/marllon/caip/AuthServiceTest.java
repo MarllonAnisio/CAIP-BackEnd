@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
-public class AuthServiceTest {
+ class AuthServiceTest {
 
     @Mock
     private AuthenticationManager authenticationManager;
