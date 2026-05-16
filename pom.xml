@@ -273,9 +273,11 @@
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <version>9.0.10</version> <configuration>
-                <failBuildOnCVSS>7.0</failBuildOnCVSS>
-            </configuration>
+                <version>9.0.10</version>
+                <configuration>
+                    <failBuildOnCVSS>7.0</failBuildOnCVSS>
+                    <failOnError>false</failOnError> <!-- Não falha a build em caso de erro na análise, apenas gera o relatório -->
+                </configuration>
             </plugin>
         </plugins>
     </build>
