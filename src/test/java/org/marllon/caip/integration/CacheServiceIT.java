@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
-@ActiveProfiles("integration") // <--- A mágica acontece aqui! Chama o arquivo novo.
+@ActiveProfiles("integration")
 class CacheServiceIT {
 
     @Autowired
