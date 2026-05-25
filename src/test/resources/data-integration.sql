@@ -1,8 +1,5 @@
--- 1. Cria a Role (Perfil) de ADMIN
-INSERT INTO tb_role (id, name) VALUES (1, 'ADMIN');
-
-INSERT INTO tb_users (id, registration, name, password, is_active)
-VALUES (1, '123456', 'Administrador do Sistema', '$2a$10$nUlXpALjPjBzJ4YYhvjq7.nH.1GEPj/rHEEYL76L9tKdv2b0wWJd2', true);
-
+-- Repare que agora passamos 'ADMIN' ou 'STUDENT' direto na coluna role
+INSERT INTO tb_users (is_active, registration, name, password, role)
+VALUES (true, '123456', 'Marllon', 'senha_criptografada_aqui', 'ADMIN');
 
 --INSERT INTO tb_user_role ( fk_user_id, fk_role_id) VALUES (1, 1);
