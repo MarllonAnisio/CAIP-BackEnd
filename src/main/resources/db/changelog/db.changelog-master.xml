@@ -177,4 +177,17 @@
     <changeSet author="Administrador (generated)" id="1777919543764-22">
         <addForeignKeyConstraint baseColumnNames="fk_user_id" baseTableName="tb_user_role" constraintName="fkp2uoyo3hovs226gitegk9jkc3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tb_users" validate="true"/>
     </changeSet>
+    <changeSet author="marllon" id="20260525-migracao-enum-role">
+        <addColumn tableName="tb_users">
+            <column name="role" type="VARCHAR(30)" defaultValue="STUDENT">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <dropForeignKeyConstraint baseTableName="tb_user_role" constraintName="fk2mtlpvhtqfoivgc7aknfrved"/>
+        <dropForeignKeyConstraint baseTableName="tb_user_role" constraintName="fkp2uoyo3hovs226gitegk9jkc3"/>
+
+        <dropTable tableName="tb_user_role"/>
+        <dropTable tableName="tb_role"/>
+    </changeSet>
 </databaseChangeLog>
