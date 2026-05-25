@@ -3,12 +3,11 @@ package org.marllon.caip.service;
 import lombok.RequiredArgsConstructor;
 import org.marllon.caip.dto.request.UserRequest;
 import org.marllon.caip.dto.response.UserResponse;
-import org.marllon.caip.model.Role;
+import org.marllon.caip.exception.user_exceptions.IllegalUserActionException;
 import org.marllon.caip.model.User;
-import org.marllon.caip.repository.RoleRepository;
+import org.marllon.caip.model.constants.Role;
 import org.marllon.caip.repository.UserRepository;
 import org.marllon.caip.service.mapper.UserMapper;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
@@ -36,7 +34,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserResponse findById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+                .orElseThrow(() -> new IllegalUserActionException("Usuário não encontrado"));
         return userMapper.toResponse(user);
     }
 
@@ -46,30 +44,24 @@ public class UserService {
         /**
          * Sempre usar a role padrão "Estudante" no auto-registro
          * */
-        Role role = roleRepository.findByName("ROLE_STUDENT")
-                .orElseThrow(() -> new IllegalStateException("Role padrão 'Estudante' não encontrada"));
 
         User user = new User();
         user.setRegistration(dto.registration());
         user.setName(dto.name());
 
-
         /**
          * Validação forte de senha: obrigatória, texto puro (não aceitar hash)
          * */
-        String rawPassword = dto.password() == null ? "" : dto.password().trim();
-        if (rawPassword.isBlank()) {
-            throw new IllegalArgumentException("Senha é obrigatória");
-        }
+        String rawPassword = dto.password().trim();
         if (isBcrypt(rawPassword)) {
-            throw new IllegalArgumentException("Senha deve ser enviada em texto puro, não hash");
+            throw new IllegalUserActionException("Senha deve ser enviada em texto puro, não hash");
         }
         user.setPassword(passwordEncoder.encode(rawPassword));
 
         /**
          * Ignora qualquer role vinda do cliente no cadastro
          * */
-        user.setRoles(List.of(role));
+        user.setRole(Role.STUDENT);
         user.setIsActive(true);
 
         user = userRepository.save(user);
@@ -79,8 +71,7 @@ public class UserService {
     @Transactional
     public UserResponse update(Long id, UserRequest dto) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-
+                .orElseThrow(() -> new IllegalUserActionException("Usuário não encontrado"));
 
         userMapper.updateEntity(user, dto);
 
@@ -90,7 +81,7 @@ public class UserService {
         if (dto.password() != null && !dto.password().isBlank()) {
             String candidate = dto.password().trim();
             if (isBcrypt(candidate)) {
-                throw new IllegalArgumentException("Senha deve ser enviada em texto puro, não hash");
+                throw new IllegalUserActionException("Senha deve ser enviada em texto puro, não hash");
             }
             user.setPassword(passwordEncoder.encode(candidate));
         }
@@ -102,34 +93,9 @@ public class UserService {
     @Transactional
     public void delete(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new IllegalArgumentException("Usuário não encontrado");
+            throw new IllegalUserActionException("Usuário não encontrado");
         }
         userRepository.deleteById(id);
-    }
-
-    @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
-    public UserResponse updateRoles(Long userId, List<String> roleNames) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-
-        List<Role> roles = roleNames.stream()
-                .map(name -> roleRepository.findByName(name)
-                        .orElseThrow(() -> new IllegalArgumentException("Role não encontrada: " + name)))
-                .toList();
-
-        user.setRoles(roles);
-        user = userRepository.save(user);
-        return userMapper.toResponse(user);
-    }
-
-    private Role getRoleOrDefault(Role roleInput) {
-        if (roleInput != null && roleInput.getId() != null) {
-            return roleRepository.findById(roleInput.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Papel (Role) não encontrado"));
-        }
-        return roleRepository.findByName("Estudante")
-                .orElseThrow(() -> new IllegalStateException("Role padrão 'Estudante' não encontrado"));
     }
 
     // Detecta se a string parece ser um hash BCrypt ($2a, $2b, $2y)
