@@ -41,14 +41,12 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request) {
-        // 👇 A inteligência de extrair e invalidar o token foi para o Service!
         authService.logout(request);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<RefreshTokenResponse> refresh(@RequestBody RefreshTokenRequest request) {
-        // 👇 Toda a lógica de checar blacklist e gerar novos tokens foi para o Service!
         return ResponseEntity.ok(authService.refresh(request));
     }
 }

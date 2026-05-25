@@ -36,7 +36,7 @@ public class LocationController {
         return ResponseEntity.ok(locationService.findById(id));
     }
     @PostMapping
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_LIBRARIAN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<LocationResponse> insert(@RequestBody @Valid LocationRequest request) {
         LocationResponse created = locationService.create(request);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
@@ -45,13 +45,13 @@ public class LocationController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_LIBRARIAN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<LocationResponse> update(@PathVariable Long id, @RequestBody @Valid LocationRequest request) {
         return ResponseEntity.ok(locationService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         locationService.delete(id);
         return ResponseEntity.noContent().build();

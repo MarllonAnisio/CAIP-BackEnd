@@ -23,13 +23,9 @@ public class ImageController {
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
-
             String imageUrl = imageService.upload(file);
-
             return ResponseEntity.ok(Map.of("url", imageUrl));
-
         } catch (IOException e) {
-            // Correção 2: O try-catch resolve o erro de 'Unhandled exception'
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Erro ao processar a imagem: " + e.getMessage()));
         }

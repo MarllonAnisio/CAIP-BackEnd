@@ -40,21 +40,21 @@ public class ReportController implements ReportControllerDoc {
     }
 
     @GetMapping("/my-active-reports")
-    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_LIBRARIAN', 'ADMIN')")
     @Override
     public ResponseEntity<List<ReportResponse>> getMyReports() {
         return ResponseEntity.ok(reportService.findMyActiveReports());
     }
 
     @GetMapping("/my-reports")
-    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_LIBRARIAN', 'ADMIN')")
     @Override
     public ResponseEntity<List<ReportResponse>> findMyReports() {
         return ResponseEntity.ok(reportService.findMyReports());
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_LIBRARIAN', 'ADMIN')")
     @Override
     public ResponseEntity<Void> delete(@PathVariable Long id) {
 
@@ -82,35 +82,35 @@ public class ReportController implements ReportControllerDoc {
      * Rotas privadas
      * */
     @GetMapping("/all-staff")
-    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ADMIN')")
     @Override
     public ResponseEntity<List<ReportResponse>> findAllForStaff() {
         return ResponseEntity.ok(reportService.findAllForStaff());
     }
 
     @GetMapping("/all-active")
-    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ADMIN')")
     @Override
     public ResponseEntity<List<ReportResponse>> findAllActive(){
         return ResponseEntity.ok(reportService.findAllActive());
     }
 
     @GetMapping("/all-closed")
-    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ADMIN')")
     @Override
     public ResponseEntity<List<ReportResponse>> findAllClosed(){
         return ResponseEntity.ok(reportService.findClosedReports());
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ADMIN')")
     @Override
     public ResponseEntity<ReportResponse> update(@PathVariable Long id, @RequestBody @Valid ReportRequest request) {
         return ResponseEntity.ok(reportService.update(id, request));
     }
 
     @PostMapping("/link-reports")
-    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ADMIN')")
     @Override
     public ResponseEntity<ReportResponse> linkReports(
             @RequestParam Long perdidoId,
@@ -120,7 +120,7 @@ public class ReportController implements ReportControllerDoc {
     }
 
     @DeleteMapping("/hard-delete/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public ResponseEntity<Void> hardDelete(@PathVariable Long id){
         reportService.hardDeleteReport(id);
