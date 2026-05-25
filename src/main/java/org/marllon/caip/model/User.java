@@ -2,21 +2,13 @@ package org.marllon.caip.model;
 
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.marllon.caip.model.constants.Role;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +21,6 @@ import java.util.Objects;
 
 @Entity(name = "tb_users")
 public class User {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,14 +43,10 @@ public class User {
     @Column(nullable = false, name = "is_active")
     private Boolean isActive = true;
 
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "tb_user_role",
-            joinColumns = @JoinColumn(name = "fk_user_id"),
-            inverseJoinColumns = @JoinColumn(name = "fk_role_id")
-    )
-    private List<Role> roles = new ArrayList<>();
+    @NotBlank(message = "The name cannot be empty.")
+    @Column(nullable = false, name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToMany(mappedBy = "foundBy")
     @JsonManagedReference("report-foundBy")

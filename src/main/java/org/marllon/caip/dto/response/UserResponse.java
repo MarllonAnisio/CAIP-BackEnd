@@ -7,5 +7,5 @@ public record UserResponse(
         String name,
         String registration,
         Boolean isActive,
-        List<String> roles
+        String role
 ) {}

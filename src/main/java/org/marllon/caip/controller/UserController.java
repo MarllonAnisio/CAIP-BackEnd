@@ -78,10 +78,4 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}/roles")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponse> updateRoles(@PathVariable Long id, @RequestBody @Valid UpdateUserRolesRequest request) {
-        return ResponseEntity.ok(service.updateRoles(id, request.roles()));
-    }
-
 }
