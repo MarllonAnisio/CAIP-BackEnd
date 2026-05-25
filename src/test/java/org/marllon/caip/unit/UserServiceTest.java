@@ -67,8 +67,6 @@ public class UserServiceTest {
         SecurityContextHolder.clearContext();
     }
 
-
-
     @DisplayName("Deve Retornar Lista de Usuarios")
     @Test
     void findAll_deveRetornarListaDeUsuarios(){
@@ -103,4 +101,36 @@ public class UserServiceTest {
 
         assertThrows(IllegalUserActionException.class, () -> userService.findById(99L));
     }
+
+    // ====================================================================
+    // TESTES DE CRIAÇÃO (CREATE)
+    // ====================================================================
+
+    @Test
+    @DisplayName("Deve criar usuário com sucesso forçando role STUDENT")
+    void create_comDadosValidos_deveSalvarERetornarUsuario() {
+        when(passwordEncoder.encode("senha123")).thenReturn("hashed_password");
+        when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userMapper.toResponse(any(User.class))).thenReturn(userResponse);
+
+        UserResponse result = userService.create(userRequest);
+
+        assertNotNull(result);
+        verify(passwordEncoder, times(1)).encode("senha123");
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    @DisplayName("Deve barrar criação se a senha for um hash do Bcrypt")
+    void create_comSenhaBcrypt_deveLancarExcecao() {
+        UserRequest badRequest = new UserRequest("Hacker", "999", "$2a$10$xyz...");
+
+        IllegalUserActionException ex = assertThrows(IllegalUserActionException.class,
+                () -> userService.create(badRequest));
+
+        assertEquals("Senha deve ser enviada em texto puro, não hash", ex.getMessage());
+        verify(userRepository, never()).save(any(User.class)); // Garante que não bateu no banco
+    }
+
+
 }
