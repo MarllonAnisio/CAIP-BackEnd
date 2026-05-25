@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.marllon.caip.dto.request.UserRequest;
 import org.marllon.caip.dto.response.UserResponse;
+import org.marllon.caip.exception.user_exceptions.IllegalUserActionException;
 import org.marllon.caip.model.User;
 import org.marllon.caip.model.constants.Role;
 import org.marllon.caip.repository.UserRepository;
@@ -93,5 +94,13 @@ public class UserServiceTest {
 
         assertNotNull(result);
         assertEquals(Long.valueOf(1L), result.id());
+    }
+
+    @Test
+    @DisplayName("Deve lançar exceção quando ID não existir no findById")
+    void findById_quandoIdNaoExistir_deveLancarExcecao() {
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalUserActionException.class, () -> userService.findById(99L));
     }
 }
