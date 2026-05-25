@@ -18,6 +18,8 @@ import org.marllon.caip.service.mapper.UserMapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -66,6 +68,10 @@ public class UserServiceTest {
     void tearDown() {
         SecurityContextHolder.clearContext();
     }
+
+    // ====================================================================
+    // TESTES DE BUSCA (FIND)
+    // ====================================================================
 
     @DisplayName("Deve Retornar Lista de Usuarios")
     @Test
@@ -132,5 +138,30 @@ public class UserServiceTest {
         verify(userRepository, never()).save(any(User.class)); // Garante que não bateu no banco
     }
 
+    // ====================================================================
+    // TESTES DE CONTEXTO DE SEGURANÇA (SECURITY)
+    // ====================================================================
 
+    @Test
+    @DisplayName("Deve retornar o usuário logado via Security Context")
+    void getAuthenticatedUser_deveRetornarUsuarioLogado() {
+        // Arrange: Mockando o contexto de segurança do Spring
+        Authentication auth = mock(Authentication.class);
+        SecurityContext context = mock(SecurityContext.class);
+
+        when(auth.getName()).thenReturn("123456");
+        when(context.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(context);
+
+        when(userRepository.findByRegistration("123456")).thenReturn(Optional.of(user));
+        when(userMapper.toResponse(user)).thenReturn(userResponse);
+
+        // Act
+        UserResponse result = userService.getAuthenticatedUser();
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("marllon", result.name());
+        verify(userRepository, times(1)).findByRegistration("123456");
+    }
 }
