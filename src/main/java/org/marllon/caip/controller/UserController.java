@@ -40,7 +40,7 @@ public class UserController {
      * Rotas Administrativas
      * */
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<List<UserResponse>> findAll() {
         return ResponseEntity.ok(service.findAll());
     }
