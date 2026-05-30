@@ -13,7 +13,7 @@ import org.marllon.caip.exception.user_exceptions.IllegalUserActionException;
 import org.marllon.caip.model.User;
 import org.marllon.caip.model.constants.Role;
 import org.marllon.caip.repository.UserRepository;
-import org.marllon.caip.service.UserService;
+import org.marllon.caip.service.impl.UserService;
 import org.marllon.caip.service.mapper.UserMapper;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;

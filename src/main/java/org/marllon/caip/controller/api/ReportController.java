@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.marllon.caip.controller.doc.ReportControllerDoc;
 import org.marllon.caip.dto.request.ReportRequest;
 import org.marllon.caip.dto.response.ReportResponse;
-import org.marllon.caip.service.ReportService;
+import org.marllon.caip.service.impl.ReportService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;

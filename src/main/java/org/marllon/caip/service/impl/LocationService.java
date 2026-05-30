@@ -1,9 +1,8 @@
-package org.marllon.caip.service;
+package org.marllon.caip.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.marllon.caip.dto.request.LocationRequest;
 import org.marllon.caip.dto.response.LocationResponse;
-import org.marllon.caip.exception.BusinessRuleException;
 import org.marllon.caip.exception.location_exceptions.LocalJaCadastradoException;
 import org.marllon.caip.exception.location_exceptions.LocalNaoEncontradoException;
 import org.marllon.caip.model.Location;

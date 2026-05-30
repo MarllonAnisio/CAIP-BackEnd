@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.marllon.caip.dto.request.UserRequest;
 import org.marllon.caip.dto.response.UserResponse;
-import org.marllon.caip.service.UserService;
+import org.marllon.caip.service.impl.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;

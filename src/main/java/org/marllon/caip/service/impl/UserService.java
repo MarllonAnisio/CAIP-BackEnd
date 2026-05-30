@@ -1,4 +1,4 @@
-package org.marllon.caip.service;
+package org.marllon.caip.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.marllon.caip.dto.request.UserRequest;
