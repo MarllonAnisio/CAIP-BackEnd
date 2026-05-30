@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.marllon.caip.dto.request.ReportRequest;
 import org.marllon.caip.dto.response.ReportResponse;
-import org.marllon.caip.exception.StandardError;
+import org.marllon.caip.exception.error.StandardError;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;

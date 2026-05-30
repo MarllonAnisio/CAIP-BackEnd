@@ -1,9 +1,9 @@
-package org.marllon.caip.exception;
+package org.marllon.caip.exception.global;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.marllon.caip.exception.StandardError.ValidationError;
+import org.marllon.caip.exception.error.StandardError;
+import org.marllon.caip.exception.error.StandardError.ValidationError;
 import org.marllon.caip.exception.auth_exceptions.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
