@@ -45,7 +45,7 @@ A maneira mais simples de subir a aplicação completa, incluindo o banco de dad
 
 1.  **Clone o repositório:**
     ```bash
-    git clone <URL_DO_REPOSITORIO>
+    git clone <https://github.com/MarllonAnisio/CAIP-BackEnd>
     cd CAIP-BackEnd
     ```
 
