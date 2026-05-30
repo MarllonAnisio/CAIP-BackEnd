@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.Instant;
 import java.util.List;
 
-@Slf4j // 👈 Injeta o 'log' automaticamente na compilação
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -24,37 +24,20 @@ public class GlobalExceptionHandler {
      * Captura regras de negocio disparadas pelo sistema (erro 400)
      */
     @ExceptionHandler(BusinessRuleException.class)
-    public ResponseEntity<StandardError> handleBusinessRule(BusinessRuleException e, HttpServletRequest request) {
-        // ⚠️ Um Sênior sempre avisa nos logs quando uma regra de negócio é violada
+    public ResponseEntity<StandardError> handleBusinessRule(
+            BusinessRuleException e, HttpServletRequest request) {
+
         log.warn("Business Rule Violation [{}]: {}", request.getRequestURI(), e.getMessage());
 
         StandardError err = new StandardError(
                 Instant.now(),
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.value(),  // 400
                 "Violação de Regra de Negócio",
                 e.getMessage(),
                 request.getRequestURI(),
                 null
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
-    }
-
-    /**
-     * Capturando erros do banco de dados como not found (erro 404)
-     */
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<StandardError> handleNotFound(EntityNotFoundException e, HttpServletRequest request) {
-        log.info("Resource Not Found [{}]: {}", request.getRequestURI(), e.getMessage());
-
-        StandardError err = new StandardError(
-                Instant.now(),
-                HttpStatus.NOT_FOUND.value(),
-                "Recurso não encontrado",
-                e.getMessage(),
-                request.getRequestURI(),
-                null
-        );
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
     }
 
     /**
@@ -69,7 +52,6 @@ public class GlobalExceptionHandler {
                 .stream()
                 .map(err -> new ValidationError(err.getField(), err.getDefaultMessage()))
                 .toList();
-
         StandardError err = new StandardError(
                 Instant.now(),
                 HttpStatus.BAD_REQUEST.value(),
@@ -137,5 +119,20 @@ public class GlobalExceptionHandler {
                 null
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(err);
+    }
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<StandardError> handleResourceNotFound(
+            ResourceNotFoundException e, HttpServletRequest request) {
+        log.info("Resource Not Found [{}]: {}", request.getRequestURI(), e.getMessage());
+
+        StandardError err = new StandardError(
+                Instant.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "Recurso não encontrado",
+                e.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
     }
 }
