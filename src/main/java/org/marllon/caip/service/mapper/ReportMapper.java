@@ -11,11 +11,11 @@ import org.marllon.caip.dto.response.LocationResponse;
 import org.marllon.caip.dto.response.PositionResponse;
 import org.marllon.caip.dto.response.StatusStepDetailsResponse;
 import org.marllon.caip.dto.response.summarys.UserResponseSummary;
-import org.marllon.caip.model.Location;
-import org.marllon.caip.model.Position;
-import org.marllon.caip.model.Report;
-import org.marllon.caip.model.StatusStep;
-import org.marllon.caip.model.User;
+import org.marllon.caip.model.entity.Location;
+import org.marllon.caip.model.entity.Position;
+import org.marllon.caip.model.entity.Report;
+import org.marllon.caip.model.entity.StatusStep;
+import org.marllon.caip.model.entity.User;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ReportMapper {

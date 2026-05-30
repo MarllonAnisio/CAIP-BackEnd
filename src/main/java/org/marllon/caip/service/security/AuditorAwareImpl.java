@@ -1,7 +1,7 @@
 package org.marllon.caip.service.security;
 
 import io.micrometer.common.lang.NonNull;
-import org.marllon.caip.model.User;
+import org.marllon.caip.model.entity.User;
 import org.marllon.caip.repository.UserRepository;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -6,7 +6,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.marllon.caip.dto.request.UserRequest;
 import org.marllon.caip.dto.response.UserResponse;
-import org.marllon.caip.model.User;
+import org.marllon.caip.model.entity.User;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {

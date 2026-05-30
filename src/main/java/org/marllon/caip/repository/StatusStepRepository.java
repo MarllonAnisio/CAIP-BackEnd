@@ -1,6 +1,6 @@
 package org.marllon.caip.repository;
 
-import org.marllon.caip.model.StatusStep;
+import org.marllon.caip.model.entity.StatusStep;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,7 +1,7 @@
 package org.marllon.caip.service.security;
 
 import lombok.RequiredArgsConstructor;
-import org.marllon.caip.model.User;
+import org.marllon.caip.model.entity.User;
 
 import org.marllon.caip.repository.UserRepository;
 

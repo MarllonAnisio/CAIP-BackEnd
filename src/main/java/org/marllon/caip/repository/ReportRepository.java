@@ -1,7 +1,7 @@
 package org.marllon.caip.repository;
 
-import org.marllon.caip.model.Report;
-import org.marllon.caip.model.User;
+import org.marllon.caip.model.entity.Report;
+import org.marllon.caip.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

@@ -3,10 +3,10 @@ package org.marllon.caip.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.marllon.caip.model.Location;
-import org.marllon.caip.model.Position;
-import org.marllon.caip.model.Report;
-import org.marllon.caip.model.User;
+import org.marllon.caip.model.entity.Location;
+import org.marllon.caip.model.entity.Position;
+import org.marllon.caip.model.entity.Report;
+import org.marllon.caip.model.entity.User;
 import org.marllon.caip.model.constants.TypeReport;
 
 import java.time.Instant;

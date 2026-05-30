@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.marllon.caip.dto.request.LocationRequest;
 import org.marllon.caip.dto.response.LocationResponse;
-import org.marllon.caip.model.Location;
+import org.marllon.caip.model.entity.Location;
 
 @Mapper(componentModel = "spring")
 public interface LocationMapper {

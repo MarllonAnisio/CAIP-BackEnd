@@ -10,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.marllon.caip.dto.request.UserRequest;
 import org.marllon.caip.dto.response.UserResponse;
 import org.marllon.caip.exception.user_exceptions.IllegalUserActionException;
-import org.marllon.caip.model.User;
+import org.marllon.caip.model.entity.User;
 import org.marllon.caip.model.constants.Role;
 import org.marllon.caip.repository.UserRepository;
 import org.marllon.caip.service.impl.UserService;

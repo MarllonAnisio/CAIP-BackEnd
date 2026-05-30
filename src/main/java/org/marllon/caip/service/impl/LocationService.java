@@ -5,7 +5,7 @@ import org.marllon.caip.dto.request.LocationRequest;
 import org.marllon.caip.dto.response.LocationResponse;
 import org.marllon.caip.exception.location_exceptions.LocalJaCadastradoException;
 import org.marllon.caip.exception.location_exceptions.LocalNaoEncontradoException;
-import org.marllon.caip.model.Location;
+import org.marllon.caip.model.entity.Location;
 import org.marllon.caip.repository.LocationRepository;
 import org.marllon.caip.service.mapper.LocationMapper;
 import org.springframework.cache.annotation.CacheConfig;

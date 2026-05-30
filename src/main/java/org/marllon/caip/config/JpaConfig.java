@@ -1,6 +1,6 @@
 package org.marllon.caip.config;
 
-import org.marllon.caip.model.User;
+import org.marllon.caip.model.entity.User;
 import org.marllon.caip.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

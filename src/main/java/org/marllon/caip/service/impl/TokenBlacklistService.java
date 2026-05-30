@@ -1,6 +1,6 @@
 package org.marllon.caip.service.impl;
 
-import org.marllon.caip.model.BlacklistedToken;
+import org.marllon.caip.model.entity.BlacklistedToken;
 import org.marllon.caip.repository.BlacklistedTokenRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package org.marllon.caip.repository;
 
-import org.marllon.caip.model.BlacklistedToken;
+import org.marllon.caip.model.entity.BlacklistedToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.Instant;

@@ -1,4 +1,4 @@
-package org.marllon.caip.model;
+package org.marllon.caip.model.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
