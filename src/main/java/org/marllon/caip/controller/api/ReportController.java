@@ -1,4 +1,4 @@
-package org.marllon.caip.controller;
+package org.marllon.caip.controller.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

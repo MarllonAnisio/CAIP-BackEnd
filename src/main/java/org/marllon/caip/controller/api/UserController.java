@@ -1,8 +1,7 @@
-package org.marllon.caip.controller;
+package org.marllon.caip.controller.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.marllon.caip.dto.request.UpdateUserRolesRequest;
 import org.marllon.caip.dto.request.UserRequest;
 import org.marllon.caip.dto.response.UserResponse;
 import org.marllon.caip.service.UserService;

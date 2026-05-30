@@ -1,4 +1,4 @@
-package org.marllon.caip.controller;
+package org.marllon.caip.controller.api;
 
 import lombok.RequiredArgsConstructor;
 import org.marllon.caip.service.ImageService;

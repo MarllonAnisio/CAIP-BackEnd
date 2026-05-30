@@ -5,7 +5,10 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.marllon.caip.dto.request.ReportRequest;
 import org.marllon.caip.dto.response.ReportResponse;
+import org.marllon.caip.exception.auth_exceptions.UnauthorizedException;
+import org.marllon.caip.exception.reports_exceptions.ReportStatusTransitionException;
 import org.marllon.caip.exception.reports_exceptions.StatusConfigurationException;
+import org.marllon.caip.exception.user_exceptions.IllegalUserActionException;
 import org.marllon.caip.model.Location;
 import org.marllon.caip.model.Report;
 import org.marllon.caip.model.StatusStep;
@@ -22,7 +25,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -52,7 +54,6 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_LIBRARIAN') or hasRole('ADMIN')")
     public List<ReportResponse> findMyReports() {
         User me = getAuthenticatedUser();
 
@@ -63,7 +64,6 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_LIBRARIAN') or hasRole('ADMIN')")
     public List<ReportResponse> findMyActiveReports() {
         User me = getAuthenticatedUser();
         return reportRepository.findAllByAudit_CreatedByAndIsClosedFalse(me)
@@ -73,7 +73,6 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN','ADMIN')")
     public List<ReportResponse> findAllForStaff() {
         return reportRepository.findAll()
                 .stream()
@@ -82,7 +81,6 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN','ADMIN')")
     public List<ReportResponse> findAllActive() {
         return reportRepository.findAllByIsClosedIsFalse()
                 .stream()
@@ -90,7 +88,6 @@ public class ReportService {
                 .toList();
     }
     @Transactional(readOnly = true)
-    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN','ADMIN')")
     public List<ReportResponse> findClosedReports() {
         return reportRepository.findAllByIsClosedIsTrue()
                 .stream()
@@ -98,7 +95,6 @@ public class ReportService {
                 .toList();
     }
     @Transactional
-    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public ReportResponse save(ReportRequest report) {
         User me = getAuthenticatedUser();
         Location location = locationService.findEntityById(report.locationId());
@@ -116,7 +112,6 @@ public class ReportService {
 
     }
     @Transactional
-    @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_LIBRARIAN') or hasRole('ADMIN')")
     @CacheEvict(value = "tb_report", key = "#reportId")
     public void deleteReport(Long reportId) {
         Report report = reportRepository.findById(reportId)
@@ -143,25 +138,24 @@ public class ReportService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "tb_report", key = "#reportId")
     public void hardDeleteReport(Long reportId) {
         reportRepository.hardDeleteById(reportId);
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
     public ReportResponse update(Long id, ReportRequest request) {
 
         Report existingReport = reportRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Relatório não encontrado com o ID: " + id));
 
-        Location location = locationService.findEntityById(request.locationId());
+        if (existingReport.isClosed()) {
+            throw ReportStatusTransitionException.cannotModifyTerminalStatus(id, "CONCLUÍDO");  // ✅
+        }
 
+        Location location = locationService.findEntityById(request.locationId());
         reportMapper.updateEntity(existingReport, request);
         existingReport.setLocation(location);
-
-        log.info("Relatório {} atualizado com sucesso pela Staff", existingReport.getId());
 
         Report savedReport = reportRepository.save(existingReport);
         return reportMapper.toResponse(savedReport);
@@ -171,31 +165,33 @@ public class ReportService {
         Report existingReport = reportRepository.findById(reportId)
                 .orElseThrow(() -> new EntityNotFoundException("Relatório não encontrado com o ID: " + reportId));
 
+        if (existingReport.isClosed()) {
+            throw ReportStatusTransitionException.cannotCloseAlreadyClosed(reportId);
+        }
+
         existingReport.setClosed(true);
         reportRepository.save(existingReport);
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_LIBRARIAN', 'ROLE_ADMIN')")
     @Caching(evict = {
             @CacheEvict(value = "tb_report", key = "#perdidoId"),
             @CacheEvict(value = "tb_report", key = "#encontradoId")
     })
     public ReportResponse linkReports(Long perdidoId, Long encontradoId) {
 
-        // 1. Buscas Seguras
         Report perdido = reportRepository.findById(perdidoId)
                 .orElseThrow(() -> new EntityNotFoundException("Report LOST not found with id: " + perdidoId));
 
         Report encontrado = reportRepository.findById(encontradoId)
-                .orElseThrow(() -> new EntityNotFoundException("Report FOUND not  found with id: " + encontradoId));
+                .orElseThrow(() -> new EntityNotFoundException("Report FOUND not found with id: " + encontradoId));
 
-        // 2. Validações de Regra de Negócio
         if (perdido.getTypeReport() != TypeReport.LOST) {
-            throw new IllegalStateException("O primeiro report deve ser do tipo PERDIDO");
+            throw ReportStatusTransitionException.incompatibleReportForMatch(perdidoId, "LOST");  // ✅
         }
+
         if (encontrado.getTypeReport() != TypeReport.FOUND) {
-            throw new IllegalStateException("O segundo report deve ser do tipo ENCONTRADO");
+            throw ReportStatusTransitionException.incompatibleReportForMatch(encontradoId, "FOUND");  // ✅
         }
 
         StatusStep concluido = statusStepRepository.findByName("COMPLETED")
@@ -217,11 +213,11 @@ public class ReportService {
     private User getAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || auth.getName() == null) {
-            throw new IllegalStateException("Usuário não autenticado");
+            throw new UnauthorizedException("Usuário não autenticado");
         }
         String registration = auth.getName();
         return userRepository.findByRegistration(registration)
-                .orElseThrow(() -> new IllegalStateException("Usuário autenticado não encontrado"));
+                .orElseThrow(() -> new IllegalUserActionException("Usuário autenticado não encontrado"));
     }
 
 }
