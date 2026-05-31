@@ -1,6 +1,6 @@
-package org.marllon.caip.dto.response;
+package org.marllon.caip.domains.report.dto.response;
 
-import org.marllon.caip.dto.response.summarys.ReportResponseSummary;
+import org.marllon.caip.domains.report.dto.response.summary.ReportResponseSummary;
 
 import java.util.List;
 

@@ -1,9 +1,10 @@
-package org.marllon.caip.dto.response;
+package org.marllon.caip.domains.report.dto.response;
 
-import org.marllon.caip.dto.response.summarys.UserResponseSummary;
+import org.marllon.caip.domains.location.dto.response.LocationResponse;
+import org.marllon.caip.domains.location.dto.response.PositionResponse;
+import org.marllon.caip.domains.user.dto.response.summary.UserResponseSummary;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public record ReportResponse(

@@ -1,13 +1,14 @@
-package org.marllon.caip.dto.request;
+package org.marllon.caip.domains.report.dto.request;
 
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.marllon.caip.model.entity.Location;
-import org.marllon.caip.model.entity.Position;
-import org.marllon.caip.model.entity.Report;
-import org.marllon.caip.model.entity.User;
-import org.marllon.caip.model.constants.TypeReport;
+import org.marllon.caip.domains.location.dto.request.PositionRequest;
+import org.marllon.caip.domains.location.entity.Location;
+import org.marllon.caip.domains.location.entity.Position;
+import org.marllon.caip.domains.report.entity.Report;
+import org.marllon.caip.domains.user.entity.User;
+import org.marllon.caip.domains.report.entity.constants.TypeReport;
 
 import java.time.Instant;
 
