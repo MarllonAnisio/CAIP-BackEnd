@@ -1,11 +1,11 @@
-package org.marllon.caip.controller.api;
+package org.marllon.caip.domains.auth.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.marllon.caip.dto.request.AuthUserRequest;
+import org.marllon.caip.domains.auth.dto.request.AuthUserRequest;
 import org.marllon.caip.dto.request.RefreshTokenRequest;
 import org.marllon.caip.dto.request.UserRequest;
-import org.marllon.caip.dto.response.AuthUserResponse;
+import org.marllon.caip.domains.auth.dto.response.AuthUserResponse;
 import org.marllon.caip.dto.response.RefreshTokenResponse;
 import org.marllon.caip.dto.response.UserResponse;
 import org.marllon.caip.service.impl.AuthService;

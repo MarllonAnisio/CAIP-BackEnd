@@ -1,6 +1,6 @@
-package org.marllon.caip.exception.auth_exceptions;
+package org.marllon.caip.domains.auth.exception;
 
-import org.marllon.caip.exception.global.BusinessRuleException;
+import org.marllon.caip.core.exception.BusinessRuleException;
 
 public class UnauthorizedException extends BusinessRuleException {
     public UnauthorizedException(String message) {
