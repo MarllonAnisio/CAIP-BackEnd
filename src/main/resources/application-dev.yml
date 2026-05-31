@@ -7,23 +7,30 @@ spring:
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:1234}
 
+
   jpa:
-    hibernate:
-      ddl-auto: update
+    open-in-view: false
     show-sql: true
+    hibernate:
+      ddl-auto: validate
+
+  liquibase:
+
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
 
   data:
     redis:
       host: ${SPRING_DATA_REDIS_HOST:localhost}
       port: ${SPRING_DATA_REDIS_PORT:6379}
-      password: ${SPRING_DATA_REDIS_PASSWORD:}
+      password: ${SPRING_DATA_REDIS_PASSWORD:1234}
 
 cloudinary:
   api:
-    cloud_name: ${CLOUDINARY_CLOUD_NAME}
-    key: ${CLOUDINARY_API_KEY}
-    secret: ${CLOUDINARY_API_SECRET}
+    cloud_name: ${CLOUDINARY_CLOUD_NAME:}
+    key: ${CLOUDINARY_API_KEY:}
+    secret: ${CLOUDINARY_API_SECRET:}
 
 security:
   jwt:
-    secret-base64: ${JWT_SECRET}
+    secret-base64: ${JWT_SECRET:Y29sb3F1ZV91bWFfY2hhdmVfYmFzZTY0X3NlZ3VyYV9hcXVp}
