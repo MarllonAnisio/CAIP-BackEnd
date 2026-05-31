@@ -1,7 +1,7 @@
 package org.marllon.caip.core.config;
 
-import org.marllon.caip.model.entity.User;
-import org.marllon.caip.repository.UserRepository;
+import org.marllon.caip.domains.user.entity.User;
+import org.marllon.caip.domains.user.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;

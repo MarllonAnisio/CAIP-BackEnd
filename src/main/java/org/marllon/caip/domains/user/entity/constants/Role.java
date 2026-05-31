@@ -1,6 +1,5 @@
-package org.marllon.caip.model.constants;
+package org.marllon.caip.domains.user.entity.constants;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

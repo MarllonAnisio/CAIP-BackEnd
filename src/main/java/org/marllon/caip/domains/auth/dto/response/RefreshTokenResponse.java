@@ -1,4 +1,4 @@
-package org.marllon.caip.dto.response;
+package org.marllon.caip.domains.auth.dto.response;
 
 public record RefreshTokenResponse(String accessToken,
                                    long accessExpiresIn,

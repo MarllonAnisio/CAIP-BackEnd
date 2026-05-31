@@ -1,9 +1,9 @@
 package org.marllon.caip.core.security;
 
 import lombok.RequiredArgsConstructor;
-import org.marllon.caip.model.entity.User;
+import org.marllon.caip.domains.user.entity.User;
 
-import org.marllon.caip.repository.UserRepository;
+import org.marllon.caip.domains.user.repository.UserRepository;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
