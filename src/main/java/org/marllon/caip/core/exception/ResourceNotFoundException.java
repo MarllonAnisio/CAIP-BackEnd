@@ -1,4 +1,4 @@
-package org.marllon.caip.exception.global;
+package org.marllon.caip.core.exception;
 
 /**
  * Exception para quando um recurso não é encontrado.

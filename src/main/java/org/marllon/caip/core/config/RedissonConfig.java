@@ -1,4 +1,4 @@
-package org.marllon.caip.config;
+package org.marllon.caip.core.config;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

@@ -1,4 +1,4 @@
-package org.marllon.caip.config;
+package org.marllon.caip.core.config;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;

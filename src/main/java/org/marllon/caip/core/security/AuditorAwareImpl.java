@@ -1,4 +1,4 @@
-package org.marllon.caip.service.security;
+package org.marllon.caip.core.security;
 
 import io.micrometer.common.lang.NonNull;
 import org.marllon.caip.model.entity.User;

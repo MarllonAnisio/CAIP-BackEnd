@@ -1,4 +1,4 @@
-package org.marllon.caip.service.security;
+package org.marllon.caip.core.security;
 
 import lombok.RequiredArgsConstructor;
 import org.marllon.caip.model.entity.User;

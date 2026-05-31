@@ -1,4 +1,4 @@
-package org.marllon.caip.config;
+package org.marllon.caip.core.config;
 
 import org.marllon.caip.model.entity.User;
 import org.marllon.caip.repository.UserRepository;

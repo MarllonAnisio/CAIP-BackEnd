@@ -1,4 +1,4 @@
-package org.marllon.caip.service.security;
+package org.marllon.caip.core.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

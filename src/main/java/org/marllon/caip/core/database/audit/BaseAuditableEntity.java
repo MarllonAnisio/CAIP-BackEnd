@@ -1,4 +1,4 @@
-package org.marllon.caip.model.audit;
+package org.marllon.caip.core.database.audit;
 
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EntityListeners;

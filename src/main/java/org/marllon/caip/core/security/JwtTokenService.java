@@ -1,4 +1,4 @@
-package org.marllon.caip.service.security;
+package org.marllon.caip.core.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

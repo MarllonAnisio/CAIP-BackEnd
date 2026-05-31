@@ -1,4 +1,4 @@
-package org.marllon.caip.exception.error;
+package org.marllon.caip.core.exception.error;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

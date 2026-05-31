@@ -1,6 +1,6 @@
-package org.marllon.caip.config;
+package org.marllon.caip.core.config;
 
-import org.marllon.caip.service.security.JwtAuthenticationFilter;
+import org.marllon.caip.core.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

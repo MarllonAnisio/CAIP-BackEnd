@@ -1,4 +1,4 @@
-package org.marllon.caip.config;
+package org.marllon.caip.core.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
