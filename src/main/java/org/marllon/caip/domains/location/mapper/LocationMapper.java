@@ -1,10 +1,10 @@
-package org.marllon.caip.service.mapper;
+package org.marllon.caip.domains.location.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-import org.marllon.caip.dto.request.LocationRequest;
-import org.marllon.caip.dto.response.LocationResponse;
-import org.marllon.caip.model.entity.Location;
+import org.marllon.caip.domains.location.dto.request.LocationRequest;
+import org.marllon.caip.domains.location.dto.response.LocationResponse;
+import org.marllon.caip.domains.location.entity.Location;
 
 @Mapper(componentModel = "spring")
 public interface LocationMapper {

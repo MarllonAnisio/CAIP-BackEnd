@@ -1,4 +1,4 @@
-package org.marllon.caip.dto.request;
+package org.marllon.caip.domains.location.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

@@ -1,4 +1,4 @@
-package org.marllon.caip.dto.response;
+package org.marllon.caip.domains.location.dto.response;
 
 public record LocationResponse(
         Long id,

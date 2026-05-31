@@ -1,13 +1,13 @@
-package org.marllon.caip.service.impl;
+package org.marllon.caip.domains.location.service;
 
 import lombok.RequiredArgsConstructor;
-import org.marllon.caip.dto.request.LocationRequest;
-import org.marllon.caip.dto.response.LocationResponse;
-import org.marllon.caip.exception.location_exceptions.LocalJaCadastradoException;
-import org.marllon.caip.exception.location_exceptions.LocalNaoEncontradoException;
-import org.marllon.caip.model.entity.Location;
-import org.marllon.caip.repository.LocationRepository;
-import org.marllon.caip.service.mapper.LocationMapper;
+import org.marllon.caip.domains.location.dto.request.LocationRequest;
+import org.marllon.caip.domains.location.dto.response.LocationResponse;
+import org.marllon.caip.domains.location.exceptions.LocalJaCadastradoException;
+import org.marllon.caip.domains.location.exceptions.LocalNaoEncontradoException;
+import org.marllon.caip.domains.location.entity.Location;
+import org.marllon.caip.domains.location.repository.LocationRepository;
+import org.marllon.caip.domains.location.mapper.LocationMapper;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;

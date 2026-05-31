@@ -1,4 +1,4 @@
-package org.marllon.caip.model.entity;
+package org.marllon.caip.domains.location.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

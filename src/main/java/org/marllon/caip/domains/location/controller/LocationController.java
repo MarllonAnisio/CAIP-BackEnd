@@ -1,10 +1,10 @@
-package org.marllon.caip.controller.api;
+package org.marllon.caip.domains.location.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.marllon.caip.dto.request.LocationRequest;
-import org.marllon.caip.dto.response.LocationResponse;
-import org.marllon.caip.service.impl.LocationService;
+import org.marllon.caip.domains.location.dto.request.LocationRequest;
+import org.marllon.caip.domains.location.dto.response.LocationResponse;
+import org.marllon.caip.domains.location.service.LocationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;

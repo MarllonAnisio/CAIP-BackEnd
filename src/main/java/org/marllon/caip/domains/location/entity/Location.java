@@ -1,4 +1,4 @@
-package org.marllon.caip.model.entity;
+package org.marllon.caip.domains.location.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.marllon.caip.model.entity.Report;
 
 import java.util.ArrayList;
 import java.util.List;
