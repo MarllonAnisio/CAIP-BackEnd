@@ -1,4 +1,4 @@
-package org.marllon.caip.config;
+package org.marllon.caip.core.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.ExternalDocumentation;
