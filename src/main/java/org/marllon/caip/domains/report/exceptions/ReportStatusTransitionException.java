@@ -1,6 +1,6 @@
 package org.marllon.caip.domains.report.exceptions;
 
-import org.marllon.caip.core.exception.BusinessRuleException;
+import org.marllon.caip.core.exceptions.BusinessRuleException;
 /**
  * Exception lançada quando há tentativa de transição inválida no ciclo de vida de um Report.
  *

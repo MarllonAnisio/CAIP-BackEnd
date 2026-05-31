@@ -1,6 +1,6 @@
 package org.marllon.caip.domains.location.exceptions;
 
-import org.marllon.caip.core.exception.BusinessRuleException;
+import org.marllon.caip.core.exceptions.BusinessRuleException;
 
 public class LocalNaoEncontradoException extends BusinessRuleException {
     public LocalNaoEncontradoException(String message) {

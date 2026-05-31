@@ -1,10 +1,10 @@
-package org.marllon.caip.core.exception;
+package org.marllon.caip.core.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.marllon.caip.core.exception.error.StandardError;
-import org.marllon.caip.core.exception.error.StandardError.ValidationError;
-import org.marllon.caip.domains.auth.exception.UnauthorizedException;
+import org.marllon.caip.core.exceptions.error.StandardError;
+import org.marllon.caip.core.exceptions.error.StandardError.ValidationError;
+import org.marllon.caip.domains.auth.exceptions.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;

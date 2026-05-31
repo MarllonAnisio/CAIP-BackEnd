@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.marllon.caip.domains.auth.exception.UnauthorizedException;
+import org.marllon.caip.domains.auth.exceptions.UnauthorizedException;
 import org.marllon.caip.domains.auth.service.TokenBlacklistService;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

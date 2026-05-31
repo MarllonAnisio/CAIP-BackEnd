@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.marllon.caip.domains.location.service.LocationService;
 import org.marllon.caip.domains.report.dto.request.ReportRequest;
 import org.marllon.caip.domains.report.dto.response.ReportResponse;
-import org.marllon.caip.domains.auth.exception.UnauthorizedException;
+import org.marllon.caip.domains.auth.exceptions.UnauthorizedException;
 import org.marllon.caip.domains.report.exceptions.ReportStatusTransitionException;
 import org.marllon.caip.domains.report.exceptions.StatusConfigurationException;
 import org.marllon.caip.domains.user.exceptions.IllegalUserActionException;

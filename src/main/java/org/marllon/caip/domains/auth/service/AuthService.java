@@ -9,7 +9,7 @@ import org.marllon.caip.domains.user.dto.request.UserRequest;
 import org.marllon.caip.domains.auth.dto.response.AuthUserResponse;
 import org.marllon.caip.domains.auth.dto.response.RefreshTokenResponse;
 import org.marllon.caip.domains.user.dto.response.UserResponse;
-import org.marllon.caip.domains.auth.exception.UnauthorizedException;
+import org.marllon.caip.domains.auth.exceptions.UnauthorizedException;
 import org.marllon.caip.core.security.JwtTokenService;
 import org.marllon.caip.domains.user.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -1,4 +1,4 @@
-package org.marllon.caip.core.exception;
+package org.marllon.caip.core.exceptions;
 
 public class BusinessRuleException extends RuntimeException{
 
