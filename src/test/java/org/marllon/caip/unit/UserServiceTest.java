@@ -7,14 +7,14 @@ import org.junit.jupiter.api.DisplayName;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.marllon.caip.dto.request.UserRequest;
-import org.marllon.caip.dto.response.UserResponse;
-import org.marllon.caip.exception.user_exceptions.IllegalUserActionException;
-import org.marllon.caip.model.entity.User;
-import org.marllon.caip.model.constants.Role;
-import org.marllon.caip.repository.UserRepository;
-import org.marllon.caip.service.impl.UserService;
-import org.marllon.caip.service.mapper.UserMapper;
+import org.marllon.caip.domains.user.dto.request.UserRequest;
+import org.marllon.caip.domains.user.dto.response.UserResponse;
+import org.marllon.caip.domains.user.entity.User;
+import org.marllon.caip.domains.user.entity.constants.Role;
+import org.marllon.caip.domains.user.exceptions.IllegalUserActionException;
+import org.marllon.caip.domains.user.mapper.UserMapper;
+import org.marllon.caip.domains.user.repository.UserRepository;
+import org.marllon.caip.domains.user.service.UserService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -40,7 +40,7 @@ public class UserServiceTest {
     @Mock
     private UserMapper userMapper;
     @InjectMocks
-    private  UserService userService;
+    private UserService userService;
 
     private User user;
     private UserRequest userRequest;
