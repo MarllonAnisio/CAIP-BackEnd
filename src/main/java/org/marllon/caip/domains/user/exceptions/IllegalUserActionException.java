@@ -1,6 +1,6 @@
-package org.marllon.caip.exception.user_exceptions;
+package org.marllon.caip.domains.user.exceptions;
 
-import org.marllon.caip.exception.global.BusinessRuleException;
+import org.marllon.caip.core.exception.BusinessRuleException;
 
 public class IllegalUserActionException extends BusinessRuleException {
     public IllegalUserActionException(String message) {

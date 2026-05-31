@@ -1,4 +1,4 @@
-package org.marllon.caip.model.entity;
+package org.marllon.caip.domains.user.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -8,7 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.marllon.caip.model.constants.Role;
+import org.marllon.caip.domains.user.entity.constants.Role;
+import org.marllon.caip.model.entity.Report;
 
 import java.util.ArrayList;
 import java.util.List;

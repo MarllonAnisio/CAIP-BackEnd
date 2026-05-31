@@ -1,13 +1,13 @@
-package org.marllon.caip.service.impl;
+package org.marllon.caip.domains.user.service;
 
 import lombok.RequiredArgsConstructor;
-import org.marllon.caip.dto.request.UserRequest;
-import org.marllon.caip.dto.response.UserResponse;
-import org.marllon.caip.exception.user_exceptions.IllegalUserActionException;
-import org.marllon.caip.model.entity.User;
-import org.marllon.caip.model.constants.Role;
-import org.marllon.caip.repository.UserRepository;
-import org.marllon.caip.service.mapper.UserMapper;
+import org.marllon.caip.domains.user.dto.request.UserRequest;
+import org.marllon.caip.domains.user.dto.response.UserResponse;
+import org.marllon.caip.domains.user.exceptions.IllegalUserActionException;
+import org.marllon.caip.domains.user.entity.User;
+import org.marllon.caip.domains.user.entity.constants.Role;
+import org.marllon.caip.domains.user.repository.UserRepository;
+import org.marllon.caip.domains.user.mapper.UserMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,4 @@
-package org.marllon.caip.dto.response;
-
-import java.util.List;
+package org.marllon.caip.domains.user.dto.response;
 
 public record UserResponse(
         Long id,

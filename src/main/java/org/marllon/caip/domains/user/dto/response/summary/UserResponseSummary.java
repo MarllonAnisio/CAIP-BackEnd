@@ -1,4 +1,4 @@
-package org.marllon.caip.dto.response.summarys;
+package org.marllon.caip.domains.user.dto.response.summary;
 
 public record UserResponseSummary(
         String name,

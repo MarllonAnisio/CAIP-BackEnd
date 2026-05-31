@@ -1,12 +1,12 @@
-package org.marllon.caip.service.mapper;
+package org.marllon.caip.domains.user.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.marllon.caip.dto.request.UserRequest;
-import org.marllon.caip.dto.response.UserResponse;
-import org.marllon.caip.model.entity.User;
+import org.marllon.caip.domains.user.dto.request.UserRequest;
+import org.marllon.caip.domains.user.dto.response.UserResponse;
+import org.marllon.caip.domains.user.entity.User;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {
