@@ -1,4 +1,4 @@
-package org.marllon.caip.service.impl;
+package org.marllon.caip.domains.image.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;

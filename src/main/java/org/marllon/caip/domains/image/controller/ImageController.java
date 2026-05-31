@@ -1,7 +1,7 @@
-package org.marllon.caip.controller.api;
+package org.marllon.caip.domains.image.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.marllon.caip.service.impl.ImageService;
+import org.marllon.caip.domains.image.service.ImageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
