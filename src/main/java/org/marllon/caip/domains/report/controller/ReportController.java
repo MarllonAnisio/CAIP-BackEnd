@@ -1,11 +1,11 @@
-package org.marllon.caip.controller.api;
+package org.marllon.caip.domains.report.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.marllon.caip.controller.doc.ReportControllerDoc;
-import org.marllon.caip.dto.request.ReportRequest;
-import org.marllon.caip.dto.response.ReportResponse;
-import org.marllon.caip.service.impl.ReportService;
+import org.marllon.caip.domains.report.controller.doc.ReportControllerDoc;
+import org.marllon.caip.domains.report.dto.request.ReportRequest;
+import org.marllon.caip.domains.report.dto.response.ReportResponse;
+import org.marllon.caip.domains.report.service.ReportService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;

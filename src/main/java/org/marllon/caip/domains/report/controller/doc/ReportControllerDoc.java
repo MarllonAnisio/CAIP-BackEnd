@@ -1,4 +1,4 @@
-package org.marllon.caip.controller.doc;
+package org.marllon.caip.domains.report.controller.doc;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -6,9 +6,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.marllon.caip.dto.request.ReportRequest;
-import org.marllon.caip.dto.response.ReportResponse;
-import org.marllon.caip.exception.error.StandardError;
+import org.marllon.caip.domains.report.dto.request.ReportRequest;
+import org.marllon.caip.domains.report.dto.response.ReportResponse;
+import org.marllon.caip.core.exception.error.StandardError;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;

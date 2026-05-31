@@ -1,6 +1,6 @@
-package org.marllon.caip.exception.report_exceptions;
+package org.marllon.caip.domains.report.exceptions;
 
-import org.marllon.caip.exception.global.BusinessRuleException;
+import org.marllon.caip.core.exception.BusinessRuleException;
 
 public class StatusConfigurationException extends BusinessRuleException {
     public StatusConfigurationException(String message) {

@@ -1,21 +1,21 @@
-package org.marllon.caip.service.mapper;
+package org.marllon.caip.domains.report.mapper;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.marllon.caip.dto.request.ReportRequest;
-import org.marllon.caip.dto.response.ReportResponse;
-import org.marllon.caip.dto.response.LocationResponse;
-import org.marllon.caip.dto.response.PositionResponse;
-import org.marllon.caip.dto.response.StatusStepDetailsResponse;
-import org.marllon.caip.dto.response.summarys.UserResponseSummary;
-import org.marllon.caip.model.entity.Location;
-import org.marllon.caip.model.entity.Position;
-import org.marllon.caip.model.entity.Report;
-import org.marllon.caip.model.entity.StatusStep;
-import org.marllon.caip.model.entity.User;
+import org.marllon.caip.domains.report.dto.request.ReportRequest;
+import org.marllon.caip.domains.report.dto.response.ReportResponse;
+import org.marllon.caip.domains.location.dto.response.LocationResponse;
+import org.marllon.caip.domains.location.dto.response.PositionResponse;
+import org.marllon.caip.domains.report.dto.response.StatusStepDetailsResponse;
+import org.marllon.caip.domains.user.dto.response.summary.UserResponseSummary;
+import org.marllon.caip.domains.location.entity.Location;
+import org.marllon.caip.domains.location.entity.Position;
+import org.marllon.caip.domains.report.entity.Report;
+import org.marllon.caip.domains.report.entity.StatusStep;
+import org.marllon.caip.domains.user.entity.User;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ReportMapper {
