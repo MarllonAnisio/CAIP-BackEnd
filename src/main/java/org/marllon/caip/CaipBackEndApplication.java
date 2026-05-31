@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableCaching
 @EnableScheduling
-@EnableJpaRepositories(basePackages = "org.marllon.caip.repository")
+@EnableJpaRepositories(basePackages = "org.marllon.caip.domains")
 public class CaipBackEndApplication {
 
     public static void main(String[] args) {
