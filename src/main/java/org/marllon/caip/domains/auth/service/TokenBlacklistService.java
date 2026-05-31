@@ -1,4 +1,4 @@
-package org.marllon.caip.service.impl;
+package org.marllon.caip.domains.auth.service;
 
 import org.marllon.caip.model.entity.BlacklistedToken;
 import org.marllon.caip.repository.BlacklistedTokenRepository;

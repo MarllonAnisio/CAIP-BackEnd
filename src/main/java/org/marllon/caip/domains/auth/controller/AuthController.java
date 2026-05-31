@@ -8,7 +8,7 @@ import org.marllon.caip.dto.request.UserRequest;
 import org.marllon.caip.domains.auth.dto.response.AuthUserResponse;
 import org.marllon.caip.dto.response.RefreshTokenResponse;
 import org.marllon.caip.dto.response.UserResponse;
-import org.marllon.caip.service.impl.AuthService;
+import org.marllon.caip.domains.auth.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
