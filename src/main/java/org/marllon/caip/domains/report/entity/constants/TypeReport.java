@@ -1,4 +1,4 @@
-package org.marllon.caip.model.constants;
+package org.marllon.caip.domains.report.entity.constants;
 
 import lombok.Getter;
 

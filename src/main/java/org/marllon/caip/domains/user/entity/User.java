@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.marllon.caip.domains.user.entity.constants.Role;
-import org.marllon.caip.model.entity.Report;
+import org.marllon.caip.domains.report.entity.Report;
 
 import java.util.ArrayList;
 import java.util.List;

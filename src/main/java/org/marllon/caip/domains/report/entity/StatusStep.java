@@ -1,4 +1,4 @@
-package org.marllon.caip.model.entity;
+package org.marllon.caip.domains.report.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;

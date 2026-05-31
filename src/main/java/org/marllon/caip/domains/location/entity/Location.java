@@ -16,7 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.marllon.caip.model.entity.Report;
+import org.marllon.caip.domains.report.entity.Report;
 
 import java.util.ArrayList;
 import java.util.List;

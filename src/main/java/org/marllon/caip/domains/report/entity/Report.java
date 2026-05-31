@@ -1,4 +1,4 @@
-package org.marllon.caip.model.entity;
+package org.marllon.caip.domains.report.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -23,8 +23,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import org.marllon.caip.model.audit.BaseAuditableEntity;
-import org.marllon.caip.model.constants.TypeReport;
+import org.marllon.caip.core.database.audit.BaseAuditableEntity;
+import org.marllon.caip.domains.location.entity.Location;
+import org.marllon.caip.domains.location.entity.Position;
+import org.marllon.caip.domains.user.entity.User;
+import org.marllon.caip.domains.report.entity.constants.TypeReport;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
