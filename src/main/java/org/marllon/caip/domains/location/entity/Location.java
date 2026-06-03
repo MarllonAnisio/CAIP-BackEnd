@@ -42,6 +42,7 @@ public class Location {
     @OneToMany(mappedBy = "location", fetch = FetchType.LAZY)
     @JsonManagedReference("report-location")
     @JsonIgnore
+    @ToString.Exclude
     private List<Report> reports = new ArrayList<>();;
 
 }

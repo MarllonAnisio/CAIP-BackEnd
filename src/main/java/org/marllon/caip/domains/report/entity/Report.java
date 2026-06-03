@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.marllon.caip.core.database.audit.BaseAuditableEntity;
@@ -100,6 +101,7 @@ public class Report  extends BaseAuditableEntity {
 
     @ManyToOne
     @JoinColumn(name = "fk_location_id", nullable = false)
+    @ToString.Exclude
     private Location location;
 
     /**
@@ -119,6 +121,7 @@ public class Report  extends BaseAuditableEntity {
             joinColumns =  @JoinColumn(name = "fk_report_id"),
             inverseJoinColumns = @JoinColumn(name = "fk_status_step_id")
     )
+    @ToString.Exclude
     private List<StatusStep> statusSteps = new ArrayList<>();
 
 
@@ -128,6 +131,7 @@ public class Report  extends BaseAuditableEntity {
     @ManyToOne
     @JoinColumn(name = "fk_found_by")
     @JsonBackReference("report-foundBy")
+    @ToString.Exclude
     private User foundBy;
 
     /**
@@ -136,6 +140,7 @@ public class Report  extends BaseAuditableEntity {
     @ManyToOne
     @JoinColumn(name = "fk_collected_by")
     @JsonBackReference("report-collectedBy")
+    @ToString.Exclude
     private User collectedBy;
 
     @Override
@@ -149,23 +154,8 @@ public class Report  extends BaseAuditableEntity {
     public int hashCode() {
         return Objects.hashCode(id);
     }
-
-    @Override
-    public String toString() {
-        return "Report{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", date=" + date +
-                ", dateReclamed=" + dateReclamed +
-                ", typeReport=" + typeReport +
-                ", isClosed=" + isClosed +
-                ", description='" + description + '\'' +
-                ", position=" + position +
-                ", location=" + location +
-                ", imageUrl='" + imageUrl + '\'' +
-                ", statusSteps=" + statusSteps +
-                ", foundBy=" + foundBy +
-                ", collectedBy=" + collectedBy +
-                '}';
-    }
+    
+    // Removi o método toString manual porque já temos o @Data do Lombok.
+    // Como adicionei @ToString.Exclude nos campos que causam ciclo, o @Data vai 
+    // gerar o toString() corretamente agora sem StackOverflowError.
 }

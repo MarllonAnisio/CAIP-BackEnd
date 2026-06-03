@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("integration")
+@ActiveProfiles("test")
 @Import(TestConfig.class)
 @DisplayName("Integration Test: Image Upload and Report Flow")
 class ImageUploadReportIntegrationTest {
