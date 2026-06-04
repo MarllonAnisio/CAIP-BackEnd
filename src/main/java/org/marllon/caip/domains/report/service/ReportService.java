@@ -1,17 +1,14 @@
 package org.marllon.caip.domains.report.service;
 
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.marllon.caip.domains.auth.service.AuthService;
 import org.marllon.caip.domains.location.service.LocationService;
 import org.marllon.caip.domains.report.dto.request.ReportRequest;
 import org.marllon.caip.domains.report.dto.response.ReportResponse;
-import org.marllon.caip.domains.auth.exceptions.UnauthorizedException;
 import org.marllon.caip.domains.report.exceptions.ReportNotFoundException;
 import org.marllon.caip.domains.report.exceptions.ReportStatusTransitionException;
 import org.marllon.caip.domains.report.exceptions.StatusConfigurationException;
-import org.marllon.caip.domains.user.exceptions.IllegalUserActionException;
 import org.marllon.caip.domains.location.entity.Location;
 import org.marllon.caip.domains.report.entity.Report;
 import org.marllon.caip.domains.report.entity.StatusStep;
@@ -19,21 +16,15 @@ import org.marllon.caip.domains.user.entity.User;
 import org.marllon.caip.domains.report.entity.constants.TypeReport;
 import org.marllon.caip.domains.report.repository.ReportRepository;
 import org.marllon.caip.domains.report.repository.StatusStepRepository;
-import org.marllon.caip.domains.user.repository.UserRepository;
 import org.marllon.caip.domains.report.mapper.ReportMapper;
-import org.marllon.caip.domains.user.mapper.UserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,9 +35,7 @@ public class ReportService {
     private static final Logger log = LoggerFactory.getLogger(ReportService.class);
     private final ReportRepository reportRepository;
     private final ReportMapper reportMapper;
-    private final UserMapper userMapper;
     private final StatusStepRepository statusStepRepository;
-    private final UserRepository userRepository;
     private final LocationService locationService;
     private final AuthService authService;
 
@@ -62,7 +51,7 @@ public class ReportService {
     public List<ReportResponse> findMyReports() {
         User me = authService.getAuthenticatedUser();
 
-        return reportRepository.findAllByAudit_CreatedBy(me)
+        return reportRepository.findAllByCreator(me)
                 .stream()
                 .map(reportMapper::toResponse)
                 .toList();
@@ -71,7 +60,7 @@ public class ReportService {
     @Transactional(readOnly = true)
     public List<ReportResponse> findMyActiveReports() {
         User me = authService.getAuthenticatedUser();
-        return reportRepository.findAllByAudit_CreatedByAndIsClosedFalse(me)
+        return reportRepository.findActiveReportsByCreator(me)
                 .stream()
                 .map(reportMapper::toResponse)
                 .toList();
@@ -87,14 +76,14 @@ public class ReportService {
 
     @Transactional(readOnly = true)
     public List<ReportResponse> findAllActive() {
-        return reportRepository.findAllByIsClosedIsFalse()
+        return reportRepository.findAllByIsClosedFalse()
                 .stream()
                 .map(reportMapper::toResponse)
                 .toList();
     }
     @Transactional(readOnly = true)
     public List<ReportResponse> findClosedReports() {
-        return reportRepository.findAllByIsClosedIsTrue()
+        return reportRepository.findAllByIsClosedTrue()
                 .stream()
                 .map(reportMapper::toResponse)
                 .toList();
