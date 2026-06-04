@@ -3,10 +3,12 @@ package org.marllon.caip.domains.report.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.marllon.caip.domains.auth.service.AuthService;
 import org.marllon.caip.domains.location.service.LocationService;
 import org.marllon.caip.domains.report.dto.request.ReportRequest;
 import org.marllon.caip.domains.report.dto.response.ReportResponse;
 import org.marllon.caip.domains.auth.exceptions.UnauthorizedException;
+import org.marllon.caip.domains.report.exceptions.ReportNotFoundException;
 import org.marllon.caip.domains.report.exceptions.ReportStatusTransitionException;
 import org.marllon.caip.domains.report.exceptions.StatusConfigurationException;
 import org.marllon.caip.domains.user.exceptions.IllegalUserActionException;
@@ -45,18 +47,19 @@ public class ReportService {
     private final StatusStepRepository statusStepRepository;
     private final UserRepository userRepository;
     private final LocationService locationService;
+    private final AuthService authService;
 
     @Transactional(readOnly = true)
     @Cacheable(value = "tb_report", key = "#id")
     public ReportResponse findById(Long id) {
         Report report = reportRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Report not found with id: " + id));
+                .orElseThrow(() -> new ReportNotFoundException("Report not found with id: " + id));
         return reportMapper.toResponse(report);
     }
 
     @Transactional(readOnly = true)
     public List<ReportResponse> findMyReports() {
-        User me = getAuthenticatedUser();
+        User me = authService.getAuthenticatedUser();
 
         return reportRepository.findAllByAudit_CreatedBy(me)
                 .stream()
@@ -66,7 +69,7 @@ public class ReportService {
 
     @Transactional(readOnly = true)
     public List<ReportResponse> findMyActiveReports() {
-        User me = getAuthenticatedUser();
+        User me = authService.getAuthenticatedUser();
         return reportRepository.findAllByAudit_CreatedByAndIsClosedFalse(me)
                 .stream()
                 .map(reportMapper::toResponse)
@@ -97,7 +100,7 @@ public class ReportService {
     }
     @Transactional
     public ReportResponse save(ReportRequest report) {
-        User me = getAuthenticatedUser();
+        User me = authService.getAuthenticatedUser();
         Location location = locationService.findEntityById(report.locationId());
 
         Report reportConverted = report.toEntity(me, location);
@@ -118,7 +121,7 @@ public class ReportService {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new EntityNotFoundException("Relatório não encontrado"));
 
-        User me = getAuthenticatedUser();
+        User me = authService.getAuthenticatedUser();
         boolean isOwner = report.getFoundBy()
                 .getId()
                 .equals(me.getId());
@@ -211,14 +214,6 @@ public class ReportService {
 
         return reportMapper.toResponse(salvo);
     }
-    private User getAuthenticatedUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || auth.getName() == null) {
-            throw new UnauthorizedException("Usuário não autenticado");
-        }
-        String registration = auth.getName();
-        return userRepository.findByRegistration(registration)
-                .orElseThrow(() -> new IllegalUserActionException("Usuário autenticado não encontrado"));
-    }
+
 
 }

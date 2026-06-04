@@ -11,10 +11,14 @@ import org.marllon.caip.domains.auth.dto.response.RefreshTokenResponse;
 import org.marllon.caip.domains.user.dto.response.UserResponse;
 import org.marllon.caip.domains.auth.exceptions.UnauthorizedException;
 import org.marllon.caip.core.security.JwtTokenService;
+import org.marllon.caip.domains.user.entity.User;
+import org.marllon.caip.domains.user.exceptions.IllegalUserActionException;
+import org.marllon.caip.domains.user.repository.UserRepository;
 import org.marllon.caip.domains.user.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -27,6 +31,8 @@ public class AuthService {
     private final JwtTokenService jwtService;
     private final UserService userService;
     private final TokenBlacklistService tokenBlacklistService;
+    private final UserRepository userRepository;
+
 
     public AuthUserResponse login(AuthUserRequest authUserRequest) {
         Authentication auth = authenticationManager.authenticate(
@@ -94,5 +100,15 @@ public class AuthService {
             log.error("Falha grave na validação do Refresh Token: {}", e.getMessage());
             throw new UnauthorizedException("Falha na validação de segurança do Token.");
         }
+    }
+
+    public User getAuthenticatedUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getName() == null) {
+            throw new UnauthorizedException("Usuário não autenticado");
+        }
+        String registration = auth.getName();
+        return userRepository.findByRegistration(registration)
+                .orElseThrow(() -> new IllegalUserActionException("Usuário autenticado não encontrado"));
     }
 }
