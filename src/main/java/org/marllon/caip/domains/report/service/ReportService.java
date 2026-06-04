@@ -28,6 +28,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -117,28 +118,14 @@ public class ReportService {
     }
     @Transactional
     @CacheEvict(value = "tb_report", key = "#reportId")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN') or @reportSecurity.isOwner(#reportId)")
     public void deleteReport(Long reportId) {
         Report report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new EntityNotFoundException("Relatório não encontrado"));
-
-        User me = authService.getAuthenticatedUser();
-        boolean isOwner = report.getFoundBy()
-                .getId()
-                .equals(me.getId());
-
-        if (!isOwner) {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            boolean isStaff = auth.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_LIBRARIAN") || a.getAuthority().equals("ROLE_ADMIN"));
-
-            if (!isStaff) {
-                log.warn("Usuário {} tentou deletar o relatório {} sem permissão", me.getRegistration(), reportId);
-                throw new AccessDeniedException("Você só tem permissão para deletar os seus próprios relatórios.");
-            }
-        }
+                .orElseThrow(() -> new ReportNotFoundException("Relatório não encontrado"));
 
         reportRepository.delete(report);
-        log.info("Relatório {} deletado (soft delete) pelo usuário {}", reportId, me.getRegistration());
+        log.info("Relatório {} deletado (soft delete) pelo usuário {}",
+                reportId, authService.getAuthenticatedUser().getRegistration());
     }
 
     @Transactional
@@ -151,10 +138,10 @@ public class ReportService {
     public ReportResponse update(Long id, ReportRequest request) {
 
         Report existingReport = reportRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Relatório não encontrado com o ID: " + id));
+                .orElseThrow(() -> new ReportNotFoundException("Relatório não encontrado com o ID: " + id));
 
         if (existingReport.isClosed()) {
-            throw ReportStatusTransitionException.cannotModifyTerminalStatus(id, "CONCLUÍDO");  // ✅
+            throw ReportStatusTransitionException.cannotModifyTerminalStatus(id, "CONCLUÍDO");
         }
 
         Location location = locationService.findEntityById(request.locationId());
@@ -167,7 +154,7 @@ public class ReportService {
 
     public void closeReport(Long reportId) {
         Report existingReport = reportRepository.findById(reportId)
-                .orElseThrow(() -> new EntityNotFoundException("Relatório não encontrado com o ID: " + reportId));
+                .orElseThrow(() -> new ReportNotFoundException("Relatório não encontrado com o ID: " + reportId));
 
         if (existingReport.isClosed()) {
             throw ReportStatusTransitionException.cannotCloseAlreadyClosed(reportId);
@@ -185,17 +172,17 @@ public class ReportService {
     public ReportResponse linkReports(Long perdidoId, Long encontradoId) {
 
         Report perdido = reportRepository.findById(perdidoId)
-                .orElseThrow(() -> new EntityNotFoundException("Report LOST not found with id: " + perdidoId));
+                .orElseThrow(() -> new ReportNotFoundException("Report LOST not found with id: " + perdidoId));
 
         Report encontrado = reportRepository.findById(encontradoId)
-                .orElseThrow(() -> new EntityNotFoundException("Report FOUND not found with id: " + encontradoId));
+                .orElseThrow(() -> new ReportNotFoundException("Report FOUND not found with id: " + encontradoId));
 
         if (perdido.getTypeReport() != TypeReport.LOST) {
-            throw ReportStatusTransitionException.incompatibleReportForMatch(perdidoId, "LOST");  // ✅
+            throw ReportStatusTransitionException.incompatibleReportForMatch(perdidoId, "LOST");
         }
 
         if (encontrado.getTypeReport() != TypeReport.FOUND) {
-            throw ReportStatusTransitionException.incompatibleReportForMatch(encontradoId, "FOUND");  // ✅
+            throw ReportStatusTransitionException.incompatibleReportForMatch(encontradoId, "FOUND");
         }
 
         StatusStep concluido = statusStepRepository.findByName("COMPLETED")
