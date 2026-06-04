@@ -2,6 +2,7 @@ package org.marllon.caip.domains.report.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -14,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
@@ -33,15 +35,16 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
-@Entity(name = "tb_report")
+@Entity
+@Table(name = "tb_report")
 @SQLDelete(sql = "UPDATE tb_report SET deleted = true WHERE id=?")
 @SQLRestriction("deleted = false")
-public class Report  extends BaseAuditableEntity {
+public class Report extends BaseAuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -155,7 +158,4 @@ public class Report  extends BaseAuditableEntity {
         return Objects.hashCode(id);
     }
     
-    // Removi o método toString manual porque já temos o @Data do Lombok.
-    // Como adicionei @ToString.Exclude nos campos que causam ciclo, o @Data vai 
-    // gerar o toString() corretamente agora sem StackOverflowError.
 }
