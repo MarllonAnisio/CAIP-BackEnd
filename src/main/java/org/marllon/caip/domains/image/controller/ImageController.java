@@ -1,8 +1,7 @@
 package org.marllon.caip.domains.image.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.marllon.caip.domains.image.service.ImageService;
-import org.springframework.http.HttpStatus;
+import org.marllon.caip.domains.image.service.FileStorageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -19,17 +17,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ImageController {
 
-    private final ImageService imageService;
+    private final FileStorageService fileStorageService;
 
     @PostMapping("/upload")
     @PreAuthorize("hasAnyRole('STUDENT', 'LIBRARIAN', 'ADMIN')")
     public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
-        try {
-            String imageUrl = imageService.upload(file);
-            return ResponseEntity.ok(Map.of("url", imageUrl));
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Erro ao processar a imagem: " + e.getMessage()));
-        }
+        String imageUrl = fileStorageService.upload(file, "caip/reports");
+        return ResponseEntity.ok(Map.of("url", imageUrl));
     }
 }

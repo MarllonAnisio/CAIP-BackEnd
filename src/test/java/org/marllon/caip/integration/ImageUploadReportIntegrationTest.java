@@ -1,17 +1,13 @@
 package org.marllon.caip.integration;
 
-import com.cloudinary.Cloudinary;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.marllon.caip.config.TestConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -21,19 +17,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
 @Import(TestConfig.class)
 @DisplayName("Integration Test: Image Upload and Report Flow")
-class ImageUploadReportIntegrationTest {
+class ImageUploadReportIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired(required = false)
-    private Cloudinary cloudinary; //Autowired to ensure the context loads
-
+    /**
+     * Testa a integração do endpoint de upload.
+     * Como o FileStorageService está "mockado" (veja TestConfig), este teste 
+     * não bate na internet. Ele valida se o Controller aceita o MultipartFile 
+     * e retorna o formato esperado de JSON (com a chave "url") quando o serviço mockado responde.
+     */
     @Test
     @DisplayName("Should upload an image and return its URL")
     @WithMockUser(roles = "STUDENT")
@@ -51,6 +47,11 @@ class ImageUploadReportIntegrationTest {
                 .andExpect(jsonPath("$.url").isString());
     }
 
+    /**
+     * Testa o fluxo principal de denúncia de itens perdidos.
+     * Valida se a API recebe um payload complexo, converte para entidade, liga
+     * com a Location do banco e persiste tudo com sucesso.
+     */
     @Test
     @DisplayName("Should create a report with a given image URL")
     @WithMockUser(username = "student001", roles = "STUDENT")
@@ -79,6 +80,10 @@ class ImageUploadReportIntegrationTest {
                 .andExpect(jsonPath("$.imageUrl").value(imageUrl));
     }
 
+    /**
+     * Testa se a busca por ID traz todos os dados corretos, incluindo 
+     * as relações (como a URL da imagem que veio do serviço externo).
+     */
     @Test
     @DisplayName("Should retrieve a report and include the image URL")
     @WithMockUser(username = "student001", roles = "STUDENT")
@@ -92,6 +97,11 @@ class ImageUploadReportIntegrationTest {
                 .andExpect(jsonPath("$.imageUrl").value(containsString("res.cloudinary.com")));
     }
 
+    /**
+     * Teste de Validação (@Valid).
+     * O sistema deve recusar a criação do post se faltarem dados críticos, 
+     * neste caso, se o DTO não receber a URL da imagem.
+     */
     @Test
     @DisplayName("Should fail to create a report if image URL is missing")
     @WithMockUser(username = "student001", roles = "STUDENT")
@@ -115,6 +125,11 @@ class ImageUploadReportIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
+    /**
+     * Testa o filtro por usuário criador.
+     * Garante que o endpoint 'my-reports' lê corretamente o contexto do Spring Security
+     * (o usuário "student001") e aplica o filtro via JPQL no ReportRepository.
+     */
     @Test
     @DisplayName("Should return all reports created by the user")
     @WithMockUser(username = "student001", roles = "STUDENT")
