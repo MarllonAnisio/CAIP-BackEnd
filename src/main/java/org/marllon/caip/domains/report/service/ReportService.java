@@ -3,6 +3,7 @@ package org.marllon.caip.domains.report.service;
 
 import lombok.RequiredArgsConstructor;
 import org.marllon.caip.domains.auth.service.AuthService;
+import org.marllon.caip.domains.image.service.FileStorageService;
 import org.marllon.caip.domains.location.service.LocationService;
 import org.marllon.caip.domains.report.dto.request.ReportRequest;
 import org.marllon.caip.domains.report.dto.response.ReportResponse;
@@ -38,6 +39,7 @@ public class ReportService {
     private final StatusStepRepository statusStepRepository;
     private final LocationService locationService;
     private final AuthService authService;
+    private final FileStorageService fileStorageService;
 
     @Transactional(readOnly = true)
     @Cacheable(value = "tb_report", key = "#id")
@@ -111,6 +113,14 @@ public class ReportService {
     public void deleteReport(Long reportId) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new ReportNotFoundException("Relatório não encontrado"));
+        try {
+            fileStorageService.delete(report.getImageUrl());
+            log.info("Imagem associada ao relatório {} deletada do armazenamento em nuvem.", reportId);
+        } catch (Exception e) {
+            log.error("Falha ao deletar a imagem {} do armazenamento em nuvem. O relatório {} será deletado mesmo assim.",
+                    report.getImageUrl(), reportId, e);
+        }
+
 
         reportRepository.delete(report);
         log.info("Relatório {} deletado (soft delete) pelo usuário {}",
