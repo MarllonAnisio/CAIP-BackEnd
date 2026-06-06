@@ -2,8 +2,11 @@ package org.marllon.caip.domains.user.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.marllon.caip.domains.auth.service.AuthService;
 import org.marllon.caip.domains.user.dto.request.UserRequest;
 import org.marllon.caip.domains.user.dto.response.UserResponse;
+import org.marllon.caip.domains.user.entity.User;
+import org.marllon.caip.domains.user.mapper.UserMapper;
 import org.marllon.caip.domains.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,40 +27,43 @@ import java.util.List;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService service;
+    
+    private final UserService userService;
+    private final AuthService authService;
+    private final UserMapper userMapper;
 
     /**
-     * rota publica para quem está logado
-     * */
+     * Rota para o usuário logado obter suas próprias informações.
+     */
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> getMe() {
-        // Qualquer usuário com token válido pode ver seu próprio perfil
-        return ResponseEntity.ok(service.getAuthenticatedUser());
+    public ResponseEntity<UserResponse> getMyProfile() {
+        User authenticatedUser = authService.getAuthenticatedUser();
+        return ResponseEntity.ok(userMapper.toResponse(authenticatedUser));
     }
 
     /**
      * Rotas Administrativas
-     * */
+     */
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<List<UserResponse>> findAll() {
-        return ResponseEntity.ok(service.findAll());
+        return ResponseEntity.ok(userService.findAll());
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.findById(id));
+        return ResponseEntity.ok(userService.findById(id));
     }
 
     /**
-     * Usuarios se cadastram por meio de um endpoint POST em AuthController  /api/auth/register.
+     * Usuarios se cadastram por meio de um endpoint POST em AuthController /api/auth/register.
      * Esta rota é para o Admin forçar a criação de alguém.
-     * */
+     */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> insert(@RequestBody @Valid UserRequest dto) {
-        UserResponse created = service.create(dto);
+        UserResponse created = userService.create(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(created.id())
                 .toUri();
@@ -67,13 +73,13 @@ public class UserController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> update(@PathVariable Long id, @RequestBody @Valid UserRequest user) {
-        return ResponseEntity.ok(service.update(id, user));
+        return ResponseEntity.ok(userService.update(id, user));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.delete(id);
+        userService.delete(id);
         return ResponseEntity.noContent().build();
     }
 

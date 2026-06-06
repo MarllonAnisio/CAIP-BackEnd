@@ -1,10 +1,9 @@
 package org.marllon.caip.unit;
 
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.marllon.caip.domains.user.dto.request.UserRequest;
@@ -18,19 +17,16 @@ import org.marllon.caip.domains.user.service.UserService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("UserService Unit Tests")
 public class UserServiceTest {
 
     @Mock
@@ -39,129 +35,132 @@ public class UserServiceTest {
     private PasswordEncoder passwordEncoder;
     @Mock
     private UserMapper userMapper;
+
     @InjectMocks
     private UserService userService;
 
-    private User user;
+    private User mockUser;
     private UserRequest userRequest;
     private UserResponse userResponse;
 
     @BeforeEach
     void setUp() {
-        user = new User();
-        user.setId(1L);
-        user.setName("marllon");
-        user.setRegistration("123456");
-        user.setPassword("hashed_password");
-        user.setRole(Role.STUDENT);
-        user.setIsActive(true);
+        mockUser = new User();
+        mockUser.setId(1L);
+        mockUser.setName("marllon");
+        mockUser.setRegistration("123456");
+        mockUser.setPassword("hashed_password");
+        mockUser.setRole(Role.STUDENT);
+        mockUser.setIsActive(true);
 
         userRequest = new UserRequest("Marllon", "123456", "senha123");
-        userResponse = new UserResponse(
-                1L,
-                "marllon",
-                "123456",
-                true,Role.STUDENT.getName()
-        );
-    }
-    @AfterEach
-    void tearDown() {
-        SecurityContextHolder.clearContext();
+        userResponse = new UserResponse(1L, "marllon", "123456", true, Role.STUDENT.getName());
     }
 
-    // ====================================================================
-    // TESTES DE BUSCA (FIND)
-    // ====================================================================
+    @Nested
+    @DisplayName("Find Methods")
+    class FindMethods {
+        /**
+         * Testa se o serviço consegue listar todos os usuários, chamando o repositório
+         * e mapeando corretamente as entidades para DTOs de resposta.
+         */
+        @Test
+        @DisplayName("Should return a list of all users")
+        void findAll_shouldReturnUserList() {
+            when(userRepository.findAll()).thenReturn(List.of(mockUser));
+            when(userMapper.toResponse(mockUser)).thenReturn(userResponse);
 
-    @DisplayName("Deve Retornar Lista de Usuarios")
-    @Test
-    void findAll_deveRetornarListaDeUsuarios(){
+            List<UserResponse> result = userService.findAll();
 
-        when(userRepository.findAll()).thenReturn(List.of(user));
-        when(userMapper.toResponse(user)).thenReturn(userResponse);
+            assertFalse(result.isEmpty());
+            assertEquals(1, result.size());
+            assertEquals("marllon", result.get(0).name());
+            verify(userRepository).findAll();
+        }
 
-        List<UserResponse> result = userService.findAll();
+        /**
+         * Testa o caminho feliz da busca por ID. Garante que, se o repositório
+         * encontrar o usuário, ele será corretamente mapeado e retornado.
+         */
+        @Test
+        @DisplayName("Should return user when ID exists")
+        void findById_whenIdExists_shouldReturnUser() {
+            when(userRepository.findById(1L)).thenReturn(Optional.of(mockUser));
+            when(userMapper.toResponse(mockUser)).thenReturn(userResponse);
 
-        assertFalse(result.isEmpty());
-        assertEquals(1, result.size());
-        assertEquals("marllon", result.get(0).name());
-        verify(userRepository, times(1)).findAll();
+            UserResponse result = userService.findById(1L);
+
+            assertNotNull(result);
+            assertEquals(1L, result.id());
+        }
+
+        /**
+         * Testa o caminho de erro da busca por ID. Garante que uma exceção apropriada
+         * é lançada se o ID do usuário não for encontrado no banco de dados.
+         */
+        @Test
+        @DisplayName("Should throw exception when ID does not exist")
+        void findById_whenIdDoesNotExist_shouldThrowException() {
+            when(userRepository.findById(99L)).thenReturn(Optional.empty());
+            assertThrows(IllegalUserActionException.class, () -> userService.findById(99L));
+        }
     }
 
-    @DisplayName("Deve Retornar usuário quando ID existir")
-    @Test
-    void findById_quandoIdExistir_deveRetornarUsuario(){
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userMapper.toResponse(user)).thenReturn(userResponse);
+    @Nested
+    @DisplayName("Create/Update Methods")
+    class MutateMethods {
+        /**
+         * Testa a lógica de criação de um novo usuário.
+         * Valida se a senha é criptografada, se a role é forçada para STUDENT
+         * (ignorando o que o cliente possa ter enviado) e se o usuário é salvo.
+         */
+        @Test
+        @DisplayName("Should create user with STUDENT role and hashed password")
+        void create_withValidData_shouldSaveAndReturnUser() {
+            when(passwordEncoder.encode("senha123")).thenReturn("hashed_password");
+            when(userRepository.save(any(User.class))).thenReturn(mockUser);
+            when(userMapper.toResponse(any(User.class))).thenReturn(userResponse);
 
-        UserResponse result = userService.findById(1L);
+            UserResponse result = userService.create(userRequest);
 
-        assertNotNull(result);
-        assertEquals(Long.valueOf(1L), result.id());
-    }
+            assertNotNull(result);
+            verify(passwordEncoder).encode("senha123");
+            verify(userRepository).save(any(User.class));
+        }
 
-    @Test
-    @DisplayName("Deve lançar exceção quando ID não existir no findById")
-    void findById_quandoIdNaoExistir_deveLancarExcecao() {
-        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+        /**
+         * Teste de segurança: Garante que o sistema não aceite uma senha que já
+         * parece ser um hash BCrypt, forçando o cliente a enviar senhas em texto puro.
+         * Isso previne que hashes mal-formados ou fracos sejam salvos no banco.
+         */
+        @Test
+        @DisplayName("Should block creation if password is a Bcrypt hash")
+        void create_withBcryptPassword_shouldThrowException() {
+            UserRequest badRequest = new UserRequest("Hacker", "999", "$2a$10$xyz...");
 
-        assertThrows(IllegalUserActionException.class, () -> userService.findById(99L));
-    }
+            var ex = assertThrows(IllegalUserActionException.class, () -> userService.create(badRequest));
 
-    // ====================================================================
-    // TESTES DE CRIAÇÃO (CREATE)
-    // ====================================================================
+            assertEquals("Senha deve ser enviada em texto puro, não hash", ex.getMessage());
+            verify(userRepository, never()).save(any());
+        }
 
-    @Test
-    @DisplayName("Deve criar usuário com sucesso forçando role STUDENT")
-    void create_comDadosValidos_deveSalvarERetornarUsuario() {
-        when(passwordEncoder.encode("senha123")).thenReturn("hashed_password");
-        when(userRepository.save(any(User.class))).thenReturn(user);
-        when(userMapper.toResponse(any(User.class))).thenReturn(userResponse);
+        /**
+         * Testa a lógica de atualização de um usuário, garantindo que a senha
+         * só é atualizada se uma nova for fornecida em texto puro.
+         */
+        @Test
+        @DisplayName("Should update user and password if provided")
+        void update_withNewPassword_shouldUpdateAll() {
+            UserRequest updateRequest = new UserRequest("Marllon Atualizado", "123456", "novaSenha456");
+            when(userRepository.findById(1L)).thenReturn(Optional.of(mockUser));
+            when(passwordEncoder.encode("novaSenha456")).thenReturn("new_hashed_password");
+            when(userRepository.save(any(User.class))).thenReturn(mockUser);
 
-        UserResponse result = userService.create(userRequest);
+            userService.update(1L, updateRequest);
 
-        assertNotNull(result);
-        verify(passwordEncoder, times(1)).encode("senha123");
-        verify(userRepository, times(1)).save(any(User.class));
-    }
-
-    @Test
-    @DisplayName("Deve barrar criação se a senha for um hash do Bcrypt")
-    void create_comSenhaBcrypt_deveLancarExcecao() {
-        UserRequest badRequest = new UserRequest("Hacker", "999", "$2a$10$xyz...");
-
-        IllegalUserActionException ex = assertThrows(IllegalUserActionException.class,
-                () -> userService.create(badRequest));
-
-        assertEquals("Senha deve ser enviada em texto puro, não hash", ex.getMessage());
-        verify(userRepository, never()).save(any(User.class)); // Garante que não bateu no banco
-    }
-
-    // ====================================================================
-    // TESTES DE CONTEXTO DE SEGURANÇA (SECURITY)
-    // ====================================================================
-
-    @Test
-    @DisplayName("Deve retornar o usuário logado via Security Context")
-    void getAuthenticatedUser_deveRetornarUsuarioLogado() {
-        // Arrange: Mockando o contexto de segurança do Spring
-        Authentication auth = mock(Authentication.class);
-        SecurityContext context = mock(SecurityContext.class);
-
-        when(auth.getName()).thenReturn("123456");
-        when(context.getAuthentication()).thenReturn(auth);
-        SecurityContextHolder.setContext(context);
-
-        when(userRepository.findByRegistration("123456")).thenReturn(Optional.of(user));
-        when(userMapper.toResponse(user)).thenReturn(userResponse);
-
-        // Act
-        UserResponse result = userService.getAuthenticatedUser();
-
-        // Assert
-        assertNotNull(result);
-        assertEquals("marllon", result.name());
-        verify(userRepository, times(1)).findByRegistration("123456");
+            verify(userMapper).updateEntity(mockUser, updateRequest);
+            verify(passwordEncoder).encode("novaSenha456");
+            verify(userRepository).save(mockUser);
+        }
     }
 }

@@ -102,17 +102,4 @@ public class UserService {
     private boolean isBcrypt(String s) {
         return s.startsWith("$2a$") || s.startsWith("$2b$") || s.startsWith("$2y$");
     }
-
-    // Novo método: retorna o usuário autenticado (perfil)
-    @Transactional(readOnly = true)
-    public UserResponse getAuthenticatedUser() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || auth.getName() == null || auth.getName().isBlank()) {
-            throw new IllegalArgumentException("Usuário não autenticado");
-        }
-        String registration = auth.getName(); // no login, o principal é a registration
-        User user = userRepository.findByRegistration(registration)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-        return userMapper.toResponse(user);
-    }
 }

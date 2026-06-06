@@ -44,6 +44,12 @@ import static org.mockito.Mockito.when;
     @InjectMocks
     private AuthService authService;
 
+    /**
+     * Testa o fluxo principal de autenticação (Login).
+     * O objetivo é garantir que, ao receber credenciais válidas, o serviço chama o 
+     * AuthenticationManager do Spring Security e, em seguida, utiliza o JwtTokenService 
+     * para gerar e retornar um par de tokens (Access e Refresh) corretamente.
+     */
     @Test
     @DisplayName("Deve realizar login com sucesso e retornar Access e Refresh Tokens")
     void quandoLoginComSucesso_deveRetornarTokens() {
@@ -72,10 +78,17 @@ import static org.mockito.Mockito.when;
 
         verify(authenticationManager, times(1)).authenticate(any());
     }
+    
     // ====================================================================
     // TESTES DE REGISTER
     // ====================================================================
 
+    /**
+     * Testa o registro de novos usuários na camada de autenticação.
+     * Como a regra de criação de usuário vive no UserService, este teste valida 
+     * apenas se o AuthService está delegando a chamada corretamente para o UserService,
+     * evitando duplicação de lógica de negócios.
+     */
     @Test
     @DisplayName("Deve registrar usuário delegando para o UserService")
     void quandoRegister_deveChamarUserService() {
@@ -99,6 +112,12 @@ import static org.mockito.Mockito.when;
     // TESTES DE LOGOUT
     // ====================================================================
 
+    /**
+     * Testa o processo de invalidação de um token durante o logout.
+     * Deve extrair o token do cabeçalho "Authorization", verificar sua data de expiração 
+     * e passá-lo para o TokenBlacklistService. Isso garante que o token não poderá 
+     * ser reutilizado em requisições futuras, mitigando ataques de replay.
+     */
     @Test
     @DisplayName("Deve extrair o token do request e colocar na blacklist")
     void quandoLogoutComTokenValido_deveAdicionarNaBlacklist() {
@@ -117,6 +136,12 @@ import static org.mockito.Mockito.when;
         verify(tokenBlacklistService, times(1)).blacklist(token, dataExpiracao.toInstant());
     }
 
+    /**
+     * Testa a resiliência do método de logout.
+     * Se o cliente enviar uma requisição de logout sem um token no cabeçalho, 
+     * o sistema não deve falhar com NullPointerException, mas sim ignorar a operação 
+     * pacificamente, pois não há o que invalidar.
+     */
     @Test
     @DisplayName("Não deve fazer nada se o header Authorization for nulo no Logout")
     void quandoLogoutSemHeader_naoDeveFazerNada() {
@@ -132,6 +157,12 @@ import static org.mockito.Mockito.when;
         verify(tokenBlacklistService, times(0)).blacklist(any(), any());
     }
 
+    /**
+     * Testa o comportamento do sistema perante um token JWT malformado no logout.
+     * Se o serviço falhar ao tentar extrair a expiração do token (lançando exceção),
+     * a falha deve ser contida num try/catch para não expor erros 500 no endpoint de logout, 
+     * apenas logando o incidente.
+     */
     @Test
     @DisplayName("Deve capturar exceção no Logout se o token for inválido e não quebrar a API")
     void quandoLogoutComTokenInvalido_deveLogarErroENaoQuebrar() {
@@ -152,6 +183,12 @@ import static org.mockito.Mockito.when;
     // TESTES DE REFRESH TOKEN
     // ====================================================================
 
+    /**
+     * Testa o "Caminho Feliz" da renovação de sessão (Refresh Token).
+     * O sistema deve validar o refresh token antigo, gerar um novo par (Access + Refresh)
+     * e, CRITICAMENTE, adicionar o refresh token ANTIGO na blacklist (token rotation), 
+     * impedindo que ele seja usado para gerar múltiplos acessos infinitamente.
+     */
     @Test
     @DisplayName("Deve gerar novos tokens se o refresh token for válido")
     void quandoRefreshValido_deveRetornarNovosTokens() {
@@ -183,6 +220,11 @@ import static org.mockito.Mockito.when;
         verify(tokenBlacklistService, times(1)).blacklist(oldRefreshToken, dataExpiracao.toInstant());
     }
 
+    /**
+     * Testa o "Caminho Triste" do refresh token quando a payload está vazia.
+     * Isso impede que manipulações na API que passem payloads nulas cheguem 
+     * a causar NullPointerExceptions na camada de serviço.
+     */
     @Test
     @DisplayName("Deve lançar erro se o Refresh Token for nulo ou vazio")
     void quandoRefreshNuloOuVazio_deveLancarUnauthorized() {
@@ -195,6 +237,11 @@ import static org.mockito.Mockito.when;
         org.junit.jupiter.api.Assertions.assertThrows(UnauthorizedException.class, () -> authService.refresh(requestVazio));
     }
 
+    /**
+     * Teste crucial de segurança: verifica o bloqueio de tokens em blacklist.
+     * Se um atacante capturar um refresh token que já foi invalidado (ex: por logout ou token rotation), 
+     * o sistema deve rejeitar a operação imeditamente, lançando UnauthorizedException.
+     */
     @Test
     @DisplayName("Deve lançar erro se o Refresh Token já estiver na blacklist")
     void quandoRefreshNaBlacklist_deveLancarUnauthorized() {
@@ -207,5 +254,4 @@ import static org.mockito.Mockito.when;
         // Act & Assert
         org.junit.jupiter.api.Assertions.assertThrows(UnauthorizedException.class, () -> authService.refresh(request));
     }
-
 }
