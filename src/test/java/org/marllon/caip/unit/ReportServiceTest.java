@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.marllon.caip.domains.auth.service.AuthService;
+import org.marllon.caip.core.security.SecurityContextService;
 
 import org.marllon.caip.domains.image.exeptions.FileStorageException;
 import org.marllon.caip.domains.image.service.FileStorageService;
@@ -50,7 +50,7 @@ class ReportServiceTest {
     @Mock
     private LocationService locationService;
     @Mock
-    private AuthService authService;
+    private SecurityContextService securityContextService;
     @Mock
     private FileStorageService fileStorageService;
 
@@ -130,7 +130,7 @@ class ReportServiceTest {
         @Test
         @DisplayName("findMyReports should return user's reports")
         void findMyReports_Success() {
-            when(authService.getAuthenticatedUser()).thenReturn(mockUser);
+            when(securityContextService.getAuthenticatedUser()).thenReturn(mockUser);
             when(reportRepository.findAllByCreator(mockUser)).thenReturn(List.of(mockReport));
 
             List<ReportResponse> result = reportService.findMyReports();
@@ -152,8 +152,9 @@ class ReportServiceTest {
         @Test
         @DisplayName("should save new report successfully")
         void save_Success() {
-            when(authService.getAuthenticatedUser()).thenReturn(mockUser);
+            when(securityContextService.getAuthenticatedUser()).thenReturn(mockUser);
             when(locationService.findEntityById(1L)).thenReturn(mockLocation);
+            when(reportMapper.toEntity(any(), any(), any())).thenReturn(mockReport);
             when(statusStepRepository.findByName("LOST")).thenReturn(Optional.of(mockStatus));
             when(reportRepository.save(any(Report.class))).thenReturn(mockReport);
             when(reportMapper.toResponse(mockReport)).thenReturn(mockReportResponse);
@@ -172,8 +173,9 @@ class ReportServiceTest {
         @Test
         @DisplayName("should throw exception if initial status is not configured")
         void save_Error_StatusNotFound() {
-            when(authService.getAuthenticatedUser()).thenReturn(mockUser);
+            when(securityContextService.getAuthenticatedUser()).thenReturn(mockUser);
             when(locationService.findEntityById(1L)).thenReturn(mockLocation);
+            when(reportMapper.toEntity(any(), any(), any())).thenReturn(mockReport);
             when(statusStepRepository.findByName("LOST")).thenReturn(Optional.empty());
 
             assertThrows(StatusConfigurationException.class, () -> reportService.save(reportRequest));
@@ -186,7 +188,7 @@ class ReportServiceTest {
         @Test
         @DisplayName("should throw exception if location is not found")
         void save_Error_LocationNotFound() {
-            when(authService.getAuthenticatedUser()).thenReturn(mockUser);
+            when(securityContextService.getAuthenticatedUser()).thenReturn(mockUser);
             when(locationService.findEntityById(99L)).thenThrow(new LocalNaoEncontradoException("Location not found"));
 
             ReportRequest requestWithInvalidLocation = new ReportRequest("Title", "Desc", "LOST", "url", 99L, null);
@@ -253,7 +255,7 @@ class ReportServiceTest {
         @DisplayName("deleteReport should delete image and report successfully")
         void deleteReport_Success() {
             when(reportRepository.findById(1L)).thenReturn(Optional.of(mockReport));
-            when(authService.getAuthenticatedUser()).thenReturn(mockUser);
+            when(securityContextService.getAuthenticatedUser()).thenReturn(mockUser);
             
             reportService.deleteReport(1L);
 
@@ -271,7 +273,7 @@ class ReportServiceTest {
         @DisplayName("deleteReport should still delete report even if image deletion fails")
         void deleteReport_ShouldContinueWhenFileStorageFails() {
             when(reportRepository.findById(1L)).thenReturn(Optional.of(mockReport));
-            when(authService.getAuthenticatedUser()).thenReturn(mockUser);
+            when(securityContextService.getAuthenticatedUser()).thenReturn(mockUser);
             doThrow(new FileStorageException("Simulated S3 error")).when(fileStorageService).delete(anyString());
 
             reportService.deleteReport(1L);
@@ -286,6 +288,7 @@ class ReportServiceTest {
         @Test
         @DisplayName("deleteReport should throw exception if report not found")
         void deleteReport_Error_NotFound() {
+            when(securityContextService.getAuthenticatedUser()).thenReturn(mockUser);
             when(reportRepository.findById(99L)).thenReturn(Optional.empty());
             assertThrows(ReportNotFoundException.class, () -> reportService.deleteReport(99L));
         }

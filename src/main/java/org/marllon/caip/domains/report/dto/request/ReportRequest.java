@@ -31,30 +31,4 @@ public record ReportRequest(
 
         PositionRequest position
 
-
-
-){
-    public Report toEntity(User author, Location location) {
-
-        Position positionEntity = null;
-        if (this.position != null && this.position.latitude() != null && this.position.longitude() != null) {
-            positionEntity = new Position();
-            positionEntity.setLatidude(this.position.latitude());
-            positionEntity.setLongitude(this.position.longitude());
-        }
-
-        return Report.builder()
-                .title(this.title)
-                .description(this.description)
-                .typeReport(TypeReport.valueOf(this.typeReport))
-                .imageUrl(this.imageUrl)
-                .position(positionEntity)
-                .location(location)
-                .foundBy(author)
-
-
-                .isClosed(false)
-                .date(Instant.now())
-                .build();
-    }
-}
+){}

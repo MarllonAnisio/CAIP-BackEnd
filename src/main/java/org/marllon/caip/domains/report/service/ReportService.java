@@ -2,7 +2,7 @@ package org.marllon.caip.domains.report.service;
 
 
 import lombok.RequiredArgsConstructor;
-import org.marllon.caip.domains.auth.service.AuthService;
+import org.marllon.caip.core.security.SecurityContextService;
 import org.marllon.caip.domains.image.service.FileStorageService;
 import org.marllon.caip.domains.location.service.LocationService;
 import org.marllon.caip.domains.report.dto.request.ReportRequest;
@@ -38,7 +38,7 @@ public class ReportService {
     private final ReportMapper reportMapper;
     private final StatusStepRepository statusStepRepository;
     private final LocationService locationService;
-    private final AuthService authService;
+    private final SecurityContextService securityContextService;
     private final FileStorageService fileStorageService;
 
     @Transactional(readOnly = true)
@@ -51,7 +51,7 @@ public class ReportService {
 
     @Transactional(readOnly = true)
     public List<ReportResponse> findMyReports() {
-        User me = authService.getAuthenticatedUser();
+        User me = securityContextService.getAuthenticatedUser();
 
         return reportRepository.findAllByCreator(me)
                 .stream()
@@ -61,7 +61,7 @@ public class ReportService {
 
     @Transactional(readOnly = true)
     public List<ReportResponse> findMyActiveReports() {
-        User me = authService.getAuthenticatedUser();
+        User me = securityContextService.getAuthenticatedUser();
         return reportRepository.findActiveReportsByCreator(me)
                 .stream()
                 .map(reportMapper::toResponse)
@@ -92,10 +92,10 @@ public class ReportService {
     }
     @Transactional
     public ReportResponse save(ReportRequest report) {
-        User me = authService.getAuthenticatedUser();
+        User me = securityContextService.getAuthenticatedUser();
         Location location = locationService.findEntityById(report.locationId());
 
-        Report reportConverted = report.toEntity(me, location);
+        Report reportConverted = reportMapper.toEntity(report, me, location);
 
         StatusStep status = statusStepRepository.findByName(reportConverted.getTypeReport().name())
                 .orElseThrow(() -> new StatusConfigurationException("Atenção: O status inicial '" + reportConverted.getTypeReport().name() + "' não está cadastrado no sistema."));
@@ -111,6 +111,9 @@ public class ReportService {
     @CacheEvict(value = "tb_report", key = "#reportId")
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN') or @reportSecurity.isOwner(#reportId)")
     public void deleteReport(Long reportId) {
+        // Captura o usuário ANTES da operação destrutiva para evitar query extra após o delete
+        String deletedBy = securityContextService.getAuthenticatedUser().getRegistration();
+
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new ReportNotFoundException("Relatório não encontrado"));
         try {
@@ -121,10 +124,8 @@ public class ReportService {
                     report.getImageUrl(), reportId, e);
         }
 
-
         reportRepository.delete(report);
-        log.info("Relatório {} deletado (soft delete) pelo usuário {}",
-                reportId, authService.getAuthenticatedUser().getRegistration());
+        log.info("Relatório {} deletado (soft delete) pelo usuário {}", reportId, deletedBy);
     }
 
     @Transactional
@@ -200,6 +201,5 @@ public class ReportService {
 
         return reportMapper.toResponse(salvo);
     }
-
 
 }
