@@ -1,6 +1,7 @@
 package org.marllon.caip.domains.user.service;
 
 import lombok.RequiredArgsConstructor;
+import org.marllon.caip.core.security.SecurityContextService;
 import org.marllon.caip.domains.user.dto.request.UserRequest;
 import org.marllon.caip.domains.user.dto.response.UserResponse;
 import org.marllon.caip.domains.user.exceptions.IllegalUserActionException;
@@ -8,7 +9,6 @@ import org.marllon.caip.domains.user.entity.User;
 import org.marllon.caip.domains.user.entity.constants.Role;
 import org.marllon.caip.domains.user.repository.UserRepository;
 import org.marllon.caip.domains.user.mapper.UserMapper;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +22,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final SecurityContextService securityContextService;
+
+    @Transactional(readOnly = true)
+    public UserResponse getMyProfile() {
+        User me = securityContextService.getAuthenticatedUser();
+        return userMapper.toResponse(me);
+    }
 
     @Transactional(readOnly = true)
     public List<UserResponse> findAll() {

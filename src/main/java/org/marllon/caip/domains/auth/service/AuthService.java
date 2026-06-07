@@ -3,6 +3,7 @@ package org.marllon.caip.domains.auth.service;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.marllon.caip.core.security.SecurityContextService;
 import org.marllon.caip.domains.auth.dto.request.AuthUserRequest;
 import org.marllon.caip.domains.auth.dto.request.RefreshTokenRequest;
 import org.marllon.caip.domains.user.dto.request.UserRequest;
@@ -12,13 +13,10 @@ import org.marllon.caip.domains.user.dto.response.UserResponse;
 import org.marllon.caip.domains.auth.exceptions.UnauthorizedException;
 import org.marllon.caip.core.security.JwtTokenService;
 import org.marllon.caip.domains.user.entity.User;
-import org.marllon.caip.domains.user.exceptions.IllegalUserActionException;
-import org.marllon.caip.domains.user.repository.UserRepository;
 import org.marllon.caip.domains.user.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -31,7 +29,7 @@ public class AuthService {
     private final JwtTokenService jwtService;
     private final UserService userService;
     private final TokenBlacklistService tokenBlacklistService;
-    private final UserRepository userRepository;
+    private final SecurityContextService securityContextService;
 
 
     public AuthUserResponse login(AuthUserRequest authUserRequest) {
@@ -102,13 +100,11 @@ public class AuthService {
         }
     }
 
+    /**
+     * Delega para o {@link SecurityContextService} a obtenção do usuário autenticado.
+     * Mantido aqui para não quebrar consumidores externos até a migração completa.
+     */
     public User getAuthenticatedUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || auth.getName() == null) {
-            throw new UnauthorizedException("Usuário não autenticado");
-        }
-        String registration = auth.getName();
-        return userRepository.findByRegistration(registration)
-                .orElseThrow(() -> new IllegalUserActionException("Usuário autenticado não encontrado"));
+        return securityContextService.getAuthenticatedUser();
     }
 }

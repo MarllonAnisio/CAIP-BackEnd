@@ -2,11 +2,8 @@ package org.marllon.caip.domains.user.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.marllon.caip.domains.auth.service.AuthService;
 import org.marllon.caip.domains.user.dto.request.UserRequest;
 import org.marllon.caip.domains.user.dto.response.UserResponse;
-import org.marllon.caip.domains.user.entity.User;
-import org.marllon.caip.domains.user.mapper.UserMapper;
 import org.marllon.caip.domains.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,16 +26,13 @@ import java.util.List;
 public class UserController {
     
     private final UserService userService;
-    private final AuthService authService;
-    private final UserMapper userMapper;
 
     /**
      * Rota para o usuário logado obter suas próprias informações.
      */
     @GetMapping("/me")
     public ResponseEntity<UserResponse> getMyProfile() {
-        User authenticatedUser = authService.getAuthenticatedUser();
-        return ResponseEntity.ok(userMapper.toResponse(authenticatedUser));
+        return ResponseEntity.ok(userService.getMyProfile());
     }
 
     /**
