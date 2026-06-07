@@ -99,12 +99,4 @@ public class AuthService {
             throw new UnauthorizedException("Falha na validação de segurança do Token.");
         }
     }
-
-    /**
-     * Delega para o {@link SecurityContextService} a obtenção do usuário autenticado.
-     * Mantido aqui para não quebrar consumidores externos até a migração completa.
-     */
-    public User getAuthenticatedUser() {
-        return securityContextService.getAuthenticatedUser();
-    }
 }
