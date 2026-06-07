@@ -1,7 +1,9 @@
 package org.marllon.caip.integration;
 
+import org.marllon.caip.config.TestConfig;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -23,11 +25,16 @@ import org.testcontainers.utility.DockerImageName;
  *
  * A anotação @ActiveProfiles("integration") é herdada, garantindo que todos os testes de integração
  * usem a configuração correta que espera um banco e um cache reais.
+ *
+ * @Import(TestConfig.class) garante que o mock de FileStorageService seja registrado
+ * antes que o CloudinaryService (com @ConditionalOnMissingBean) seja avaliado,
+ * evitando que o Spring tente conectar ao Cloudinary real durante os testes.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("integration")
 @Testcontainers
+@Import(TestConfig.class)
 public abstract class AbstractIntegrationTest {
 
     @Container
