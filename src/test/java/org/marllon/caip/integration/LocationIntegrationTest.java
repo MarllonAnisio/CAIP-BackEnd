@@ -43,14 +43,14 @@ class LocationIntegrationTest extends AbstractIntegrationTest {
         }
 
         /**
-         * Verifica se a busca detalhada de um local específico funciona e retorna 
+         * Verifica se a busca detalhada de um local específico funciona e retorna
          * as propriedades corretas da entidade.
          */
         @Test
         @DisplayName("Should return a location by ID for any authenticated user")
         @WithMockUser(roles = "STUDENT")
         void findById_AsStudent_Success() throws Exception {
-            // Assumes location with ID 1 exists from data-integration.sql
+
             mockMvc.perform(get(LOCATION_API_URL + "/1"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.id").value(1))
@@ -76,7 +76,7 @@ class LocationIntegrationTest extends AbstractIntegrationTest {
 
         /**
          * Teste de segurança (Autorização): Garante que usuários com perfil ADMIN
-         * têm permissão para criar novos locais. Verifica se o recurso é persistido 
+         * têm permissão para criar novos locais. Verifica se o recurso é persistido
          * e retornado com status 201 Created.
          */
         @Test
@@ -94,7 +94,7 @@ class LocationIntegrationTest extends AbstractIntegrationTest {
         }
 
         /**
-         * Teste de segurança (Autorização): Garante que usuários LIBRARIAN 
+         * Teste de segurança (Autorização): Garante que usuários LIBRARIAN
          * também têm privilégios administrativos suficientes para gerenciar locais.
          */
         @Test
@@ -112,7 +112,7 @@ class LocationIntegrationTest extends AbstractIntegrationTest {
         /**
          * Teste Crítico de Segurança (Caminho Triste):
          * Protege contra vazamento de privilégios. Um estudante normal NUNCA
-         * deve conseguir acessar essa rota. O Spring Security deve interceptar 
+         * deve conseguir acessar essa rota. O Spring Security deve interceptar
          * a requisição antes de chegar ao controller e retornar 403.
          */
         @Test
@@ -145,7 +145,7 @@ class LocationIntegrationTest extends AbstractIntegrationTest {
 
         /**
          * Testa a regra de negócio de unicidade.
-         * Tentar recriar a "Biblioteca Central" (já inserida pelo script SQL) 
+         * Tentar recriar a "Biblioteca Central" (já inserida pelo script SQL)
          * deve ser barrado pela regra de negócio com um erro 400.
          */
         @Test

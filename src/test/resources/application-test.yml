@@ -1,0 +1,40 @@
+spring:
+  liquibase:
+    enabled: false
+
+  main:
+    allow-bean-definition-overriding: true
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    open-in-view: false
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data-integration.sql
+  cache:
+    type: jcache
+  data:
+    redis:
+      password: ""
+# Rate Limit
+bucket4j:
+  enabled: true
+# ==========================================
+# FAKES E MOCKS EXTERNOS
+# ==========================================
+cloudinary:
+  api:
+    cloud_name: fake_cloud
+    key: fake_key
+    secret: fake_secret
+security:
+  jwt:
+    secret-base64: Q2FpcEJhY2tFbmRTZWNyZXRLZXlGb3JUZXN0aW5nUHVycG9zZXMxMjM0NTY3ODk=

@@ -1,5 +1,6 @@
 package org.marllon.caip.core.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.codec.JsonJacksonCodec;
@@ -8,7 +9,6 @@ import org.redisson.jcache.configuration.RedissonConfiguration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.util.StringUtils;
 
 import javax.cache.CacheManager;
@@ -17,7 +17,6 @@ import javax.cache.configuration.MutableConfiguration;
 import javax.cache.spi.CachingProvider;
 import java.util.List;
 
-@Profile("!test")
 @Configuration
 public class RedissonConfig {
 
@@ -31,17 +30,14 @@ public class RedissonConfig {
     private String password;
 
     @Bean(destroyMethod = "shutdown")
-    public RedissonClient redissonClient() {
+    public RedissonClient redissonClient(ObjectMapper objectMapper) {
         Config config = new Config();
-        config.setCodec(new JsonJacksonCodec());
+
+        config.setCodec(new JsonJacksonCodec(objectMapper));
 
         var server = config.useSingleServer()
                 .setAddress("redis://" + host + ":" + port)
-                .setIdleConnectionTimeout(10_000)
-                .setConnectTimeout(10_000)
-                .setTimeout(3_000)
-                .setRetryAttempts(3)
-                .setRetryInterval(1_500);
+                .setIdleConnectionTimeout(10_000);
 
         if (StringUtils.hasText(password)) {
             server.setPassword(password);
