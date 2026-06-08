@@ -23,7 +23,6 @@
         <java.version>17</java.version>
         <springdoc.version>2.8.5</springdoc.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <!-- A versão do lombok tem que bater com a versão que o compilador usará -->
         <lombok.version>1.18.36</lombok.version>
         <jjwt.version>0.12.5</jjwt.version>
         <redisson.version>3.40.1</redisson.version>
@@ -116,7 +115,7 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
-        <!-- Spring Data Redis (Sem o Lettuce, pois usaremos Redisson) -->
+        <!-- Spring Data Redis -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
@@ -180,11 +179,6 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
