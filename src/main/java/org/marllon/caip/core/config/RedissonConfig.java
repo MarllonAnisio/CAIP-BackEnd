@@ -30,19 +30,26 @@ public class RedissonConfig {
     private String password;
 
     @Bean(destroyMethod = "shutdown")
-    public RedissonClient redissonClient(ObjectMapper objectMapper) {
+    public RedissonClient redissonClient() {
         Config config = new Config();
+        JsonJacksonCodec codec = new JsonJacksonCodec();
 
-        config.setCodec(new JsonJacksonCodec(objectMapper));
+        codec.getObjectMapper().registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+        codec.getObjectMapper().disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        codec.getObjectMapper().activateDefaultTyping(
+                codec.getObjectMapper().getPolymorphicTypeValidator(),
+                ObjectMapper.DefaultTyping.EVERYTHING,
+                com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
+        );
+        config.setCodec(codec);
 
         var server = config.useSingleServer()
                 .setAddress("redis://" + host + ":" + port)
                 .setIdleConnectionTimeout(10_000);
-
         if (StringUtils.hasText(password)) {
             server.setPassword(password);
         }
-
         return Redisson.create(config);
     }
 

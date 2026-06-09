@@ -9,7 +9,7 @@ import org.marllon.caip.domains.location.dto.request.LocationRequest;
 import org.marllon.caip.domains.location.dto.response.LocationResponse;
 import org.marllon.caip.domains.location.entity.Location;
 import org.marllon.caip.domains.location.exceptions.LocalJaCadastradoException;
-import org.marllon.caip.domains.location.exceptions.LocalNaoEncontradoException;
+import org.marllon.caip.domains.location.exceptions.LocalNotFoundException;
 import org.marllon.caip.domains.location.mapper.LocationMapper;
 import org.marllon.caip.domains.location.repository.LocationRepository;
 import org.marllon.caip.domains.location.service.LocationService;
@@ -98,7 +98,7 @@ class LocationServiceTest {
         @DisplayName("findById should throw exception when not found")
         void findById_Error_NotFound() {
             when(locationRepository.findById(99L)).thenReturn(Optional.empty());
-            assertThrows(LocalNaoEncontradoException.class, () -> locationService.findById(99L));
+            assertThrows(LocalNotFoundException.class, () -> locationService.findById(99L));
         }
     }
 
@@ -169,7 +169,7 @@ class LocationServiceTest {
         @DisplayName("should throw exception when updating non-existent location")
         void update_Error_NotFound() {
             when(locationRepository.findById(99L)).thenReturn(Optional.empty());
-            assertThrows(LocalNaoEncontradoException.class, () -> locationService.update(99L, locationRequest));
+            assertThrows(LocalNotFoundException.class, () -> locationService.update(99L, locationRequest));
         }
 
         /**
@@ -216,7 +216,7 @@ class LocationServiceTest {
         @DisplayName("should throw exception when deleting non-existent location")
         void delete_Error_NotFound() {
             when(locationRepository.findById(99L)).thenReturn(Optional.empty());
-            assertThrows(LocalNaoEncontradoException.class, () -> locationService.delete(99L));
+            assertThrows(LocalNotFoundException.class, () -> locationService.delete(99L));
         }
     }
 }

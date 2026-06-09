@@ -1,5 +1,6 @@
 package org.marllon.caip.integration;
 
+import jakarta.transaction.Transactional;
 import org.marllon.caip.config.TestConfig;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +23,7 @@ import org.testcontainers.utility.DockerImageName;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Import(TestConfig.class)
+@Transactional
 public abstract class AbstractIntegrationTest {
 
     @ServiceConnection

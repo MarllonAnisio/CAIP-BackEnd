@@ -10,7 +10,7 @@ import org.marllon.caip.core.security.SecurityContextService;
 import org.marllon.caip.domains.image.exeptions.FileStorageException;
 import org.marllon.caip.domains.image.service.FileStorageService;
 import org.marllon.caip.domains.location.entity.Location;
-import org.marllon.caip.domains.location.exceptions.LocalNaoEncontradoException;
+import org.marllon.caip.domains.location.exceptions.LocalNotFoundException;
 import org.marllon.caip.domains.location.service.LocationService;
 import org.marllon.caip.domains.report.dto.request.ReportRequest;
 import org.marllon.caip.domains.report.dto.response.ReportResponse;
@@ -189,11 +189,11 @@ class ReportServiceTest {
         @DisplayName("should throw exception if location is not found")
         void save_Error_LocationNotFound() {
             when(securityContextService.getAuthenticatedUser()).thenReturn(mockUser);
-            when(locationService.findEntityById(99L)).thenThrow(new LocalNaoEncontradoException("Location not found"));
+            when(locationService.findEntityById(99L)).thenThrow(new LocalNotFoundException("Location not found"));
 
             ReportRequest requestWithInvalidLocation = new ReportRequest("Title", "Desc", "LOST", "url", 99L, null);
 
-            assertThrows(LocalNaoEncontradoException.class, () -> reportService.save(requestWithInvalidLocation));
+            assertThrows(LocalNotFoundException.class, () -> reportService.save(requestWithInvalidLocation));
         }
     }
 
