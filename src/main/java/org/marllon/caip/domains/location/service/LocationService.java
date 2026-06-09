@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.marllon.caip.domains.location.dto.request.LocationRequest;
 import org.marllon.caip.domains.location.dto.response.LocationResponse;
 import org.marllon.caip.domains.location.exceptions.LocalJaCadastradoException;
-import org.marllon.caip.domains.location.exceptions.LocalNaoEncontradoException;
 import org.marllon.caip.domains.location.entity.Location;
+import org.marllon.caip.domains.location.exceptions.LocalNotFoundException;
 import org.marllon.caip.domains.location.repository.LocationRepository;
 import org.marllon.caip.domains.location.mapper.LocationMapper;
 import org.springframework.cache.annotation.CacheConfig;
@@ -37,7 +37,7 @@ public class LocationService {
     @Cacheable(key = "#id")
     public Location findEntityById(Long id) {
         return locationRepository.findById(id)
-                .orElseThrow(() -> new LocalNaoEncontradoException("Localização não encontrada com ID: " + id));
+                .orElseThrow(() -> new LocalNotFoundException("Localização não encontrada com ID: " + id));
     }
 
 

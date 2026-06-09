@@ -3,10 +3,9 @@ package org.marllon.caip.domains.image.service;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import lombok.RequiredArgsConstructor;
-import org.marllon.caip.domains.image.exeptions.FileStorageException;
 import org.marllon.caip.domains.image.exeptions.ImageDeleteException;
 import org.marllon.caip.domains.image.exeptions.ImageUploadException;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +18,7 @@ import java.util.regex.Pattern;
  * Esta é a implementação "real" que será usada em produção.
  */
 @Service
-@ConditionalOnMissingBean(FileStorageService.class)
+@Profile("!test")
 @RequiredArgsConstructor
 public class CloudinaryService implements FileStorageService {
 
