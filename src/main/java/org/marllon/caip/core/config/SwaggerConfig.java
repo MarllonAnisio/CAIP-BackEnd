@@ -19,8 +19,8 @@ import java.util.List;
 @Configuration
 public class SwaggerConfig {
 
-    // 💡 O Toque Sênior: O ':Local' no final garante que se a variável não
-    // existir no application.yml, a API NÃO VAI QUEBRAR. Ela assume "Local".
+
+
     @Value("${swagger-info.ambient:Local}")
     private String ambientType;
 
@@ -43,7 +43,7 @@ public class SwaggerConfig {
                                 .url("http://www.apache.org/licenses/LICENSE-2.0.html")
                         )
                 )
-                // 👇 Centralizamos a segurança do JWT de forma puramente programática
+
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName, new SecurityScheme()
@@ -53,7 +53,7 @@ public class SwaggerConfig {
                                 .bearerFormat("JWT")));
     }
 
-    // 👇 Mantive a sua excelente separação de rotas!
+
     @Bean
     public GroupedOpenApi publicApiGroup() {
         return GroupedOpenApi.builder()
