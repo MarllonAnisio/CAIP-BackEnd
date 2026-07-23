@@ -152,6 +152,8 @@ public class ReportService {
         return reportMapper.toResponse(savedReport);
     }
 
+    @Transactional
+    @CacheEvict(value = "tb_report", key = "#reportId")
     public void closeReport(Long reportId) {
         Report existingReport = reportRepository.findById(reportId)
                 .orElseThrow(() -> new ReportNotFoundException("Relatório não encontrado com o ID: " + reportId));
