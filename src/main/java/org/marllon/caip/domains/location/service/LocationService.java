@@ -48,7 +48,7 @@ public class LocationService {
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_LIBRARIAN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     @CacheEvict(allEntries = true)// isso é usado porque quando trabalhamos com cache, em toda atualizão e criação de um objeto, devemos limpar a cache.
     public LocationResponse create(LocationRequest request) {
 
