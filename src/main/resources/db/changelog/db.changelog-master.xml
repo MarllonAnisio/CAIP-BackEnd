@@ -189,5 +189,6 @@
 
         <dropTable tableName="tb_user_role"/>
         <dropTable tableName="tb_role"/>
+        <dropTable tableName="blacklisted_tokens"/>
     </changeSet>
 </databaseChangeLog>
