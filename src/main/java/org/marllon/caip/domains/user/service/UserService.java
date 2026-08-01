@@ -2,6 +2,7 @@ package org.marllon.caip.domains.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.marllon.caip.core.security.SecurityContextService;
+import org.marllon.caip.domains.user.dto.request.UpdateUserRolesRequest;
 import org.marllon.caip.domains.user.dto.request.UserRequest;
 import org.marllon.caip.domains.user.dto.response.UserResponse;
 import org.marllon.caip.domains.user.exceptions.IllegalUserActionException;
@@ -98,6 +99,16 @@ public class UserService {
     }
 
     @Transactional
+    public UserResponse updateRole(Long id, UpdateUserRolesRequest dto) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalUserActionException("Usuário não encontrado"));
+
+        user.setRole(dto.role());
+        user = userRepository.save(user);
+        return userMapper.toResponse(user);
+    }
+
+    @Transactional
     public void delete(Long id) {
         if (!userRepository.existsById(id)) {
             throw new IllegalUserActionException("Usuário não encontrado");
@@ -105,7 +116,6 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    // Detecta se a string parece ser um hash BCrypt ($2a, $2b, $2y)
     private boolean isBcrypt(String s) {
         return s.startsWith("$2a$") || s.startsWith("$2b$") || s.startsWith("$2y$");
     }

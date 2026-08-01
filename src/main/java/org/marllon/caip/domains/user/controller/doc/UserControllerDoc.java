@@ -69,6 +69,17 @@ public interface UserControllerDoc {
     })
     ResponseEntity<UserResponse> update(Long id, UserRequest user);
 
+    @Operation(summary = "Atualiza a role de um usuário",
+            description = "Modifica o cargo (role) de um usuário existente. Acesso restrito a ADMIN.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Role atualizada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Role inválida",
+                    content = @Content(schema = @Schema(implementation = StandardError.class))),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado",
+                    content = @Content(schema = @Schema(implementation = StandardError.class)))
+    })
+    ResponseEntity<UserResponse> updateRole(Long id, org.marllon.caip.domains.user.dto.request.UpdateUserRolesRequest request);
+
     @Operation(summary = "Deleta um usuário",
             description = "Remove permanentemente um usuário do sistema pelo seu ID. Acesso restrito a ADMIN.")
     @ApiResponses({
