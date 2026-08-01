@@ -10,97 +10,131 @@ import org.marllon.caip.domains.report.dto.request.ReportRequest;
 import org.marllon.caip.domains.report.dto.response.ReportResponse;
 import org.marllon.caip.core.exceptions.error.StandardError;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@Tag(name = "Reports", description = "Gerenciamento de Achados e Perdidos")
+@Tag(name = "Reports", description = "Gerenciamento de Achados e Perdidos — ciclo completo de criação, vinculação e encerramento de reports")
 public interface ReportControllerDoc {
 
-    @Operation(summary = "Novo item reportado")
+    @Operation(summary = "Cria um novo item reportado",
+            description = "Registra um novo report de item perdido ou encontrado. "
+                    + "Apenas usuários com role STUDENT podem criar reports. "
+                    + "O status inicial é automaticamente atribuído com base no tipo do report (LOST ou FOUND).")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Item reportado criado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Erro ao criar item reportado",
+            @ApiResponse(responseCode = "400", description = "Dados inválidos no request",
                     content = @Content(schema = @Schema(implementation = StandardError.class)))
-
-
     })
     ResponseEntity<ReportResponse> save(ReportRequest request);
 
-
-    @GetMapping("/{id}")
-    ResponseEntity<ReportResponse> findById(@PathVariable Long id);
-
-    @Operation(summary = "Lista de itens reportados")
+    @Operation(summary = "Busca um report por ID",
+            description = "Retorna os detalhes completos de um report específico, "
+                    + "incluindo localização, status steps, imagem e informações de auditoria.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de itens reportados"),
+            @ApiResponse(responseCode = "200", description = "Report encontrado"),
+            @ApiResponse(responseCode = "404", description = "Report não encontrado",
+                    content = @Content(schema = @Schema(implementation = StandardError.class)))
+    })
+    ResponseEntity<ReportResponse> findById(Long id);
+
+    @Operation(summary = "Lista meus reports ativos",
+            description = "Retorna todos os reports ativos (não fechados) criados pelo usuário autenticado. "
+                    + "Acessível por STUDENT, LIBRARIAN e ADMIN.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de reports ativos do usuário")
     })
     ResponseEntity<List<ReportResponse>> getMyReports();
 
-    @Operation(summary = "Lista de itens reportados")
+    @Operation(summary = "Lista todos os reports (Staff)",
+            description = "Retorna todos os reports do sistema, incluindo ativos e fechados. "
+                    + "Acesso restrito a LIBRARIAN e ADMIN.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de itens reportados"),
+            @ApiResponse(responseCode = "200", description = "Lista completa de reports"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado — permissão insuficiente",
+                    content = @Content(schema = @Schema(implementation = StandardError.class)))
     })
     ResponseEntity<List<ReportResponse>> findAllForStaff();
 
-
-    @Operation(summary = "Lista de itens reportados")
+    @Operation(summary = "Lista todos os reports ativos",
+            description = "Retorna todos os reports que ainda estão abertos (não fechados). "
+                    + "Acesso restrito a LIBRARIAN e ADMIN.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de itens reportados"),
+            @ApiResponse(responseCode = "200", description = "Lista de reports ativos")
     })
     ResponseEntity<List<ReportResponse>> findAllActive();
 
-    @Operation(summary = "Lista de itens reportados")
+    @Operation(summary = "Lista todos os reports fechados",
+            description = "Retorna todos os reports que já foram encerrados (fechados). "
+                    + "Acesso restrito a LIBRARIAN e ADMIN.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Lista de itens reportados"),
+            @ApiResponse(responseCode = "200", description = "Lista de reports fechados")
     })
     ResponseEntity<List<ReportResponse>> findAllClosed();
 
-
-    @Operation(summary = "Atualiza um item reportado")
+    @Operation(summary = "Atualiza um item reportado",
+            description = "Atualiza os dados de um report existente. "
+                    + "Não é possível atualizar reports que estejam em status terminal (CONCLUÍDO). "
+                    + "Acesso restrito a LIBRARIAN e ADMIN.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Item reportado atualizado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Erro ao atualizar item reportado",
+            @ApiResponse(responseCode = "200", description = "Report atualizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos ou report em status terminal",
+                    content = @Content(schema = @Schema(implementation = StandardError.class))),
+            @ApiResponse(responseCode = "404", description = "Report não encontrado",
                     content = @Content(schema = @Schema(implementation = StandardError.class)))
     })
     ResponseEntity<ReportResponse> update(Long id, ReportRequest request);
 
-    @Operation(summary = "Interliga Objetos declarados como perdidos a objetos como encontrados")
+    @Operation(summary = "Vincula um report perdido a um encontrado",
+            description = "Interliga um item declarado como LOST a um item declarado como FOUND, "
+                    + "marcando ambos com o status COMPLETED e fechando-os. "
+                    + "Acesso restrito a LIBRARIAN e ADMIN.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Itens conectados com Sucesso!"),
-            @ApiResponse(responseCode = "400", description = "Ocorreu um problema ao interligar itens selecionados")
+            @ApiResponse(responseCode = "200", description = "Reports vinculados com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Reports incompatíveis para vinculação",
+                    content = @Content(schema = @Schema(implementation = StandardError.class))),
+            @ApiResponse(responseCode = "404", description = "Um ou ambos os reports não foram encontrados",
+                    content = @Content(schema = @Schema(implementation = StandardError.class)))
     })
     ResponseEntity<ReportResponse> linkReports(Long perdidoId, Long encontradoId);
 
-    @GetMapping("/my-reports")
-    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_LIBRARIAN', 'ROLE_ADMIN')")
+    @Operation(summary = "Lista todos os meus reports",
+            description = "Retorna todos os reports (ativos e fechados) criados pelo usuário autenticado.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista completa dos meus reports")
+    })
     ResponseEntity<List<ReportResponse>> findMyReports();
 
-    @Operation(summary = "Deleta um item reportado (soft delete)")
+    @Operation(summary = "Deleta um report (soft delete)",
+            description = "Marca o report como deletado (soft delete) e remove a imagem associada do Cloudinary. "
+                    + "O dono do report ou LIBRARIAN/ADMIN podem executar esta ação.")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Item reportado deletado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Erro ao deletar item reportado",
+            @ApiResponse(responseCode = "204", description = "Report deletado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Report não encontrado",
+                    content = @Content(schema = @Schema(implementation = StandardError.class))),
+            @ApiResponse(responseCode = "403", description = "Sem permissão para deletar este report",
                     content = @Content(schema = @Schema(implementation = StandardError.class)))
     })
     ResponseEntity<Void> delete(Long id);
 
-    @Operation(summary = "Deleta item reportado do banco de dados")
+    @Operation(summary = "Deleta um report permanentemente (hard delete)",
+            description = "Remove definitivamente o report do banco de dados. "
+                    + "Esta ação é irreversível. Acesso restrito a ADMIN.")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Item reportado deletado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "erro ao deletar item")
+            @ApiResponse(responseCode = "204", description = "Report deletado permanentemente"),
+            @ApiResponse(responseCode = "403", description = "Acesso negado — apenas ADMIN",
+                    content = @Content(schema = @Schema(implementation = StandardError.class)))
     })
     ResponseEntity<Void> hardDelete(Long id);
 
-    @Operation(summary = "Fecha um item reportado")
+    @Operation(summary = "Fecha um report",
+            description = "Marca um report como fechado (isClosed = true). "
+                    + "Não é possível fechar um report que já está fechado. Acesso restrito a LIBRARIAN.")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Item reportado fechado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "erro ao fechar report")
+            @ApiResponse(responseCode = "204", description = "Report fechado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Report já está fechado",
+                    content = @Content(schema = @Schema(implementation = StandardError.class))),
+            @ApiResponse(responseCode = "404", description = "Report não encontrado",
+                    content = @Content(schema = @Schema(implementation = StandardError.class)))
     })
     ResponseEntity<Void> closeReport(Long id);
-
-
-
-
 }
