@@ -65,7 +65,7 @@ public class LocationService {
 
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_LIBRARIAN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     @CacheEvict(allEntries = true)
     public LocationResponse update(Long id, LocationRequest request) {
         Location location = findEntityById(id);
@@ -81,7 +81,7 @@ public class LocationService {
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(allEntries = true)
     public void delete(Long id) {
         Location location = findEntityById(id);
