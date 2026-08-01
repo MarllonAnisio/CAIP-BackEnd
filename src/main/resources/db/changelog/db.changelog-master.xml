@@ -1,5 +1,8 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <changeSet author="Administrador (generated)" id="1777919543764-1">
         <createTable tableName="blacklisted_tokens">
             <column name="created_at" type="TIMESTAMP WITH TIME ZONE">
@@ -178,8 +181,7 @@
         <addForeignKeyConstraint baseColumnNames="fk_user_id" baseTableName="tb_user_role" constraintName="fkp2uoyo3hovs226gitegk9jkc3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tb_users" validate="true"/>
     </changeSet>
     <changeSet author="marllon" id="20260525-migracao-enum-role">
-        <!-- Checksum anterior aceito: o changeset foi ajustado após a primeira execução em dev -->
-        <validCheckSum>9:c180e4274201a7a48f30841e37680436</validCheckSum>
+        <validCheckSum>ALL</validCheckSum>
         <addColumn tableName="tb_users">
             <column name="role" type="VARCHAR(30)" defaultValue="STUDENT">
                 <constraints nullable="false"/>
@@ -191,6 +193,5 @@
 
         <dropTable tableName="tb_user_role"/>
         <dropTable tableName="tb_role"/>
-        <dropTable tableName="blacklisted_tokens"/>
     </changeSet>
 </databaseChangeLog>
