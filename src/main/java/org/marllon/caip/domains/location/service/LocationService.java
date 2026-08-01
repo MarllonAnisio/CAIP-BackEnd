@@ -11,6 +11,7 @@ import org.marllon.caip.domains.location.mapper.LocationMapper;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,13 +34,13 @@ public class LocationService {
                 .map(locationMapper::toResponse)
                 .toList();
     }
+
     @Transactional(readOnly = true)
     @Cacheable(key = "#id")
     public Location findEntityById(Long id) {
         return locationRepository.findById(id)
                 .orElseThrow(() -> new LocalNotFoundException("Localização não encontrada com ID: " + id));
     }
-
 
     @Transactional(readOnly = true)
     public LocationResponse findById(Long id) {
@@ -49,11 +50,10 @@ public class LocationService {
 
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
-    @CacheEvict(allEntries = true)// isso é usado porque quando trabalhamos com cache, em toda atualizão e criação de um objeto, devemos limpar a cache.
+    @CacheEvict(key = "'all'") // Invalida apenas a lista completa; entradas por id continuam válidas
     public LocationResponse create(LocationRequest request) {
 
         if (locationRepository.existsByNameIgnoreCase(request.name())) {
-
             throw new LocalJaCadastradoException("Local já existe no Sistema");
         }
 
@@ -63,10 +63,12 @@ public class LocationService {
         return locationMapper.toResponse(locationRepository.save(location));
     }
 
-
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
-    @CacheEvict(allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(key = "'all'"),
+            @CacheEvict(key = "#id")
+    })
     public LocationResponse update(Long id, LocationRequest request) {
         Location location = findEntityById(id);
 
@@ -82,7 +84,10 @@ public class LocationService {
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    @CacheEvict(allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(key = "'all'"),
+            @CacheEvict(key = "#id")
+    })
     public void delete(Long id) {
         Location location = findEntityById(id);
         locationRepository.delete(location);

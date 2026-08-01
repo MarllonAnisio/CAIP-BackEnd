@@ -31,6 +31,7 @@ public class UserController implements UserControllerDoc {
     private final UserService userService;
 
     @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     @Override
     public ResponseEntity<UserResponse> getMyProfile() {
         return ResponseEntity.ok(userService.getMyProfile());

@@ -1,6 +1,7 @@
 package org.marllon.caip.core.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -122,17 +123,33 @@ public class JwtTokenService {
         return claimsResolver.apply(claims);
     }
 
-    public String extractUsername(String token) {
+    public String extractUsername(String token) throws JwtException {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public Date extractExpiration(String token) {
+    public Date extractExpiration(String token) throws JwtException {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    public boolean isTokenExpired(String token) {
+        try {
+            return extractExpiration(token).before(new Date());
+        } catch (JwtException e) {
+            return true;
+        }
+    }
+
     public boolean isTokenValid(String token, String username) {
-        final String tokenUsername = extractUsername(token);
-        return username.equals(tokenUsername) && isAccessToken(token);
+        try {
+            final String tokenUsername = extractUsername(token);
+            boolean isValidType = isAccessToken(token);
+            boolean isValidUser = username.equals(tokenUsername);
+            boolean isNotExpired = !isTokenExpired(token);
+            
+            return isValidUser && isValidType && isNotExpired;
+        } catch (JwtException e) {
+            return false;
+        }
     }
 
     public boolean isRefreshTokenValid(String token, String username) {

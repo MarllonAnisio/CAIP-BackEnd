@@ -4,6 +4,7 @@ package org.marllon.caip.domains.user.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,7 +45,7 @@ public class User {
     @Column(nullable = false, name = "is_active")
     private Boolean isActive = true;
 
-    @NotBlank(message = "The name cannot be empty.")
+    @NotNull(message = "The role cannot be null.")
     @Column(nullable = false, name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;

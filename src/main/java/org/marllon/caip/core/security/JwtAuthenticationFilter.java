@@ -71,7 +71,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (Exception e) {
-            // esse log ta servindo para segurança e saúde da aplicação
+            // Log enriquecido para auditoria de segurança: IP + Path + Motivo
+            log.warn("Erro de autenticação JWT [IP: {}] [Path: {}] [Método: {}] [Motivo: {}]",
+                    request.getRemoteAddr(),
+                    request.getServletPath(),
+                    request.getMethod(),
+                    e.getMessage());
             log.error("Erro de segurança bloqueado no Filtro JWT: {}", e.getMessage());
             handlerExceptionResolver.resolveException(request, response, null, e);
         }

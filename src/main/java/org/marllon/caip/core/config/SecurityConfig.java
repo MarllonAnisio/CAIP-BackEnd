@@ -53,8 +53,7 @@ public class SecurityConfig {
                         // Saúde da aplicação: Livre para monitoramento (ex: Docker/Kubernetes)
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
 
-                        // Métricas e dados sensíveis do servidor: Apenas Chefões!
-                        // ATENÇÃO: No banco de dados, o cargo DEVE estar salvo como 'ROLE_ADMIN'
+                        // Métricas e dados sensíveis do servidor: Acesso restrito a administradores
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
 
                         // Qualquer outra rota do sistema CAIP: Exige crachá (Token válido)!
