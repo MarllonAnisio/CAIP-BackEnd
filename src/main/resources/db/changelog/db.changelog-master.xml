@@ -178,6 +178,8 @@
         <addForeignKeyConstraint baseColumnNames="fk_user_id" baseTableName="tb_user_role" constraintName="fkp2uoyo3hovs226gitegk9jkc3" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="tb_users" validate="true"/>
     </changeSet>
     <changeSet author="marllon" id="20260525-migracao-enum-role">
+        <!-- Checksum anterior aceito: o changeset foi ajustado após a primeira execução em dev -->
+        <validCheckSum>9:c180e4274201a7a48f30841e37680436</validCheckSum>
         <addColumn tableName="tb_users">
             <column name="role" type="VARCHAR(30)" defaultValue="STUDENT">
                 <constraints nullable="false"/>

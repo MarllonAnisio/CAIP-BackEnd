@@ -26,7 +26,7 @@ public class RedissonConfig {
     @Value("${spring.data.redis.port:6379}")
     private int port;
 
-    @Value("${spring.data.redis.password:#{null}}")
+    @Value("${redis_password:#{null}}")
     private String password;
 
     @Bean(destroyMethod = "shutdown")
