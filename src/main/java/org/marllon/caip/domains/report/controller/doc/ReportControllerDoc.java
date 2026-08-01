@@ -63,6 +63,13 @@ public interface ReportControllerDoc {
     })
     ResponseEntity<List<ReportResponse>> findAllActive();
 
+    @Operation(summary = "Pesquisa reports ativos paginados por título",
+            description = "Permite buscar reports ativos por título (case-insensitive) utilizando paginação e ordenação.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Página de reports retornada com sucesso")
+    })
+    ResponseEntity<org.springframework.data.domain.Page<ReportResponse>> search(String title, org.springframework.data.domain.Pageable pageable);
+
     @Operation(summary = "Lista todos os reports fechados",
             description = "Retorna todos os reports que já foram encerrados (fechados). "
                     + "Acesso restrito a LIBRARIAN e ADMIN.")

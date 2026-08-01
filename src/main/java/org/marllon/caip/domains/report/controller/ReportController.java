@@ -53,6 +53,15 @@ public class ReportController implements ReportControllerDoc {
         return ResponseEntity.ok(reportService.findMyReports());
     }
 
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('STUDENT', 'LIBRARIAN', 'ADMIN')")
+    @Override
+    public ResponseEntity<org.springframework.data.domain.Page<ReportResponse>> search(
+            @RequestParam(required = false) String title,
+            org.springframework.data.domain.Pageable pageable) {
+        return ResponseEntity.ok(reportService.findByTitle(title, pageable));
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('STUDENT', 'LIBRARIAN', 'ADMIN')")
     @Override

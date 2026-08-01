@@ -2,6 +2,8 @@ package org.marllon.caip.domains.report.repository;
 
 import org.marllon.caip.domains.report.entity.Report;
 import org.marllon.caip.domains.user.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -35,11 +37,13 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
      */
     List<Report> findAllByIsClosedFalse();
 
-    /**
-     * Busca todos os relatórios que estão finalizados (fechados) no sistema.
-     * @return Uma lista de relatórios fechados.
-     */
     List<Report> findAllByIsClosedTrue();
+
+    Page<Report> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+
+    Page<Report> findAllByIsClosedFalse(Pageable pageable);
+
+    Page<Report> findAllByIsClosedTrue(Pageable pageable);
 
     /**
      * Realiza a exclusão física (hard delete) de um relatório.

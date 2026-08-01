@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,6 +71,27 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
+    public Page<ReportResponse> findAllForStaff(Pageable pageable) {
+        return reportRepository.findAll(pageable)
+                .map(reportMapper::toResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ReportResponse> findAllActive(Pageable pageable) {
+        return reportRepository.findAllByIsClosedFalse(pageable)
+                .map(reportMapper::toResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ReportResponse> findByTitle(String title, Pageable pageable) {
+        if (title == null || title.isBlank()) {
+            return findAllActive(pageable);
+        }
+        return reportRepository.findByTitleContainingIgnoreCase(title, pageable)
+                .map(reportMapper::toResponse);
+    }
+
+    @Transactional(readOnly = true)
     public List<ReportResponse> findAllForStaff() {
         return reportRepository.findAll()
                 .stream()
@@ -83,6 +106,7 @@ public class ReportService {
                 .map(reportMapper::toResponse)
                 .toList();
     }
+
     @Transactional(readOnly = true)
     public List<ReportResponse> findClosedReports() {
         return reportRepository.findAllByIsClosedTrue()
