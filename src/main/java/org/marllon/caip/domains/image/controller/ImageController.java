@@ -1,6 +1,7 @@
 package org.marllon.caip.domains.image.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.marllon.caip.domains.image.controller.doc.ImageControllerDoc;
 import org.marllon.caip.domains.image.service.FileStorageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,7 +16,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/images")
 @RequiredArgsConstructor
-public class ImageController {
+public class ImageController implements ImageControllerDoc {
 
     private final FileStorageService fileStorageService;
 

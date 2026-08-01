@@ -2,6 +2,7 @@ package org.marllon.caip.domains.auth.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.marllon.caip.domains.auth.controller.doc.AuthControllerDoc;
 import org.marllon.caip.domains.auth.dto.request.AuthUserRequest;
 import org.marllon.caip.domains.auth.dto.request.RefreshTokenRequest;
 import org.marllon.caip.domains.user.dto.request.UserRequest;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController implements AuthControllerDoc {
 
     private final AuthService authService;
 

@@ -2,6 +2,7 @@ package org.marllon.caip.domains.user.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.marllon.caip.domains.user.controller.doc.UserControllerDoc;
 import org.marllon.caip.domains.user.dto.request.UserRequest;
 import org.marllon.caip.domains.user.dto.response.UserResponse;
 import org.marllon.caip.domains.user.service.UserService;
@@ -23,7 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-public class UserController {
+public class UserController implements UserControllerDoc {
     
     private final UserService userService;
 

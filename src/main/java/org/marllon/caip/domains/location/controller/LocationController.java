@@ -2,6 +2,7 @@ package org.marllon.caip.domains.location.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.marllon.caip.domains.location.controller.doc.LocationControllerDoc;
 import org.marllon.caip.domains.location.dto.request.LocationRequest;
 import org.marllon.caip.domains.location.dto.response.LocationResponse;
 import org.marllon.caip.domains.location.service.LocationService;
@@ -23,7 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/locations")
 @RequiredArgsConstructor
-public class LocationController {
+public class LocationController implements LocationControllerDoc {
     private final LocationService locationService;
 
     @GetMapping
