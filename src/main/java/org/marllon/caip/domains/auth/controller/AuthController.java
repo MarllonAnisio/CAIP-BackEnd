@@ -10,6 +10,7 @@ import org.marllon.caip.domains.auth.dto.response.AuthUserResponse;
 import org.marllon.caip.domains.auth.dto.response.RefreshTokenResponse;
 import org.marllon.caip.domains.user.dto.response.UserResponse;
 import org.marllon.caip.domains.auth.service.AuthService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +31,7 @@ public class AuthController implements AuthControllerDoc {
 
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@RequestBody UserRequest request) {
-        return ResponseEntity.ok(authService.register(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
     }
 
     @PostMapping("/logout")
