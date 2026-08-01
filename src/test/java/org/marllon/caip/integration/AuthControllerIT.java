@@ -28,9 +28,8 @@ class AuthControllerIT extends AbstractIntegrationTest {
     @DisplayName("Should successfully register a new user, login, refresh token, and logout")
     void shouldExecuteFullAuthenticationLifecycle() throws Exception {
         UserRequest registerRequest = new UserRequest(
-                "2026102030",
                 "Carlos Silva",
-                "carlos.silva@aluno.ifce.edu.br",
+                "2026102030",
                 "StrongPass123!"
         );
 
