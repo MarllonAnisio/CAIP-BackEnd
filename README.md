@@ -2,6 +2,7 @@
 
 O CAIP-BackEnd é a API RESTful por trás do **Sistema CAIP**, uma solução robusta para gerenciamento de itens achados e perdidos. Construído com as tecnologias mais modernas do ecossistema Java e Spring, o projeto foi desenhado para ser seguro, performático e escalável.
 
+![CI/CD Build](https://github.com/MarllonAnisio/CAIP-BackEnd/actions/workflows/test.yml/badge.svg)
 ![Java](https://img.shields.io/badge/Java-17-blue)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.0-brightgreen)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
@@ -111,4 +112,55 @@ Este comando irá:
 - Executar a análise de vulnerabilidades do OWASP.
 
 ---
+
+## 🏛️ Arquitetura e Fluxo do Sistema
+
+O projeto adota uma arquitetura em camadas modularizada por **Domínios (DDD-lite)** (`auth`, `user`, `report`, `location`, `image`), garantindo separação clara de responsabilidades, alta testabilidade e baixo acoplamento:
+
+```mermaid
+graph TD
+    subgraph Client ["Cliente & Segurança"]
+        C[Cliente REST / Frontend] -->|HTTPS / JWT| RL[Bucket4j Rate Limiting]
+        RL --> F[JwtAuthenticationFilter]
+    end
+
+    subgraph Controllers ["Camada REST (Swagger Documented)"]
+        F --> AC[AuthController]
+        F --> UC[UserController]
+        F --> LC[LocationController]
+        F --> RC[ReportController]
+        F --> IC[ImageController]
+    end
+
+    subgraph Services ["Camada de Negócio & Cache"]
+        AC --> AS[AuthService]
+        UC --> US[UserService]
+        LC --> LS[LocationService]
+        RC --> RS[ReportService]
+        IC --> FS[FileStorageService]
+        
+        LS -.->|Cacheable / CacheEvict| RD[(Redis Cache)]
+        RS -.->|Cacheable / CacheEvict| RD
+    end
+
+    subgraph Data ["Camada de Persistência & Storage"]
+        AS --> BR[BlacklistedTokenRepository]
+        US --> UR[UserRepository]
+        LS --> LR[LocationRepository]
+        RS --> RR[ReportRepository]
+        FS --> CL[Cloudinary API]
+        
+        BR --> DB[(PostgreSQL + Liquibase)]
+        UR --> DB
+        LR --> DB
+        RR --> DB
+    end
+```
+
+### Destaques Arquiteturais:
+- **Rotinas de Segurança:** Autenticação stateless com JWT, rotação contínua de refresh tokens e controle de blacklist persistida para invalidação imediata em logout.
+- **Auditoria Automática:** JPA Auditing (`@CreatedBy`, `@CreatedDate`, `@LastModifiedBy`) integrado de forma nativa na classe base `BaseAuditableEntity`.
+- **Soft Delete vs Hard Delete:** Registros de reports utilizam exclusão lógica (`deleted = true`) com anotações `@SQLDelete` e `@SQLRestriction`, preservando histórico e possibilitando auditoria, com rota administrativa dedicada para exclusão física.
+- **Gerenciamento Desacoplado de Imagens:** Upload via `FileStorageService` abstraindo o Cloudinary, permitindo substituição simples por outros provedores (como AWS S3).
+
 
