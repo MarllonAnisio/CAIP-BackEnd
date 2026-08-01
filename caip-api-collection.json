@@ -1,0 +1,317 @@
+{
+  "info": {
+    "name": "CAIP-BackEnd API Collection",
+    "description": "Collection interativa com todos os endpoints do Sistema CAIP - Achados e Perdidos (Spring Boot + Security JWT)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "SEU_ACCESS_TOKEN_AQUI",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "SEU_REFRESH_TOKEN_AQUI",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Autenticação",
+      "item": [
+        {
+          "name": "1. Registrar Estudante (/auth/register)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"registration\": \"2026102030\",\n  \"name\": \"João da Silva\",\n  \"email\": \"joao.silva@aluno.ifce.edu.br\",\n  \"password\": \"SenhaForte123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "2. Realizar Login (/auth/login)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"registration\": \"2026102030\",\n  \"password\": \"SenhaForte123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "3. Renovar Tokens (/auth/refresh)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "4. Realizar Logout (/auth/logout)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuários",
+      "item": [
+        {
+          "name": "Meu Perfil (/api/users/me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "me"]
+            }
+          }
+        },
+        {
+          "name": "Listar Todos - Admin/Librarian (/api/users)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar Role do Usuário (/api/users/{id}/role)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"LIBRARIAN\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/1/role",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "1", "role"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Localizações",
+      "item": [
+        {
+          "name": "Listar Localizações (/api/locations)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/locations",
+              "host": ["{{base_url}}"],
+              "path": ["api", "locations"]
+            }
+          }
+        },
+        {
+          "name": "Cadastrar Localização - Staff (/api/locations)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bloco Didático I - Sala 102\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/locations",
+              "host": ["{{base_url}}"],
+              "path": ["api", "locations"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports (Achados e Perdidos)",
+      "item": [
+        {
+          "name": "Pesquisar Reports com Título e Paginação (/reports/search)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/search?title=&page=0&size=10",
+              "host": ["{{base_url}}"],
+              "path": ["reports", "search"],
+              "query": [
+                {
+                  "key": "title",
+                  "value": ""
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Meus Reports Ativos (/reports/my-active-reports)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/my-active-reports",
+              "host": ["{{base_url}}"],
+              "path": ["reports", "my-active-reports"]
+            }
+          }
+        },
+        {
+          "name": "Criar Novo Report (/reports)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Garrafa de Água Preta\",\n  \"description\": \"Garrafa térmica esquecida na bancada do laboratório de informática\",\n  \"typeReport\": \"LOST\",\n  \"locationId\": 1,\n  \"imageUrl\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\",\n  \"dateReport\": \"2026-08-01T14:30:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/reports",
+              "host": ["{{base_url}}"],
+              "path": ["reports"]
+            }
+          }
+        },
+        {
+          "name": "Vincular Perdido com Encontrado - Staff (/reports/link/{perdidoId}/{encontradoId})",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reports/link/1/2",
+              "host": ["{{base_url}}"],
+              "path": ["reports", "link", "1", "2"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
